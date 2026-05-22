@@ -1,4 +1,6 @@
-const student = JSON.parse(localStorage.getItem("student"))
+const student = JSON.parse(
+localStorage.getItem("student")
+)
 
 if(!student){
 
@@ -16,30 +18,30 @@ document.getElementById("studentInfo").innerHTML = `
 
 `
 
-document.getElementById("mid").textContent =
-student.mid || 0
+document.getElementById("mid").innerHTML =
+student.mid
 
-document.getElementById("test").textContent =
-student.test || 0
+document.getElementById("test").innerHTML =
+student.test
 
-document.getElementById("assignment").textContent =
-student.assignment || 0
+document.getElementById("assignment").innerHTML =
+student.assignment
 
-document.getElementById("final").textContent =
-student.final || 0
+document.getElementById("final").innerHTML =
+student.final
 
-document.getElementById("total").textContent =
-student.total || 0
+document.getElementById("total").innerHTML =
+student.total
 
-document.getElementById("grade").textContent =
-student.grade || "F"
+document.getElementById("grade").innerHTML =
+student.grade
 
 async function sendComplaint(){
 
 const complaint =
 document.getElementById("complaint").value
 
-await fetch("YOUR_WEB_APP_URL",{
+await fetch("https://script.google.com/macros/s/AKfycbw4ogBvGCINM25cXPdxjnbobI1wEskVjtTVi4b_S2stwt6mNhYujuP_KMYfC2CoS5Z5/exec",{
 
 method:"POST",
 
