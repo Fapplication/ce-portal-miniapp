@@ -14,7 +14,7 @@ const password =
 document.getElementById("loginPassword").value
 
 const response = await fetch(
-"https://script.google.com/macros/s/AKfycbw4ogBvGCINM25cXPdxjnbobI1wEskVjtTVi4b_S2stwt6mNhYujuP_KMYfC2CoS5Z5/exec",
+"YOUR_WEB_APP_URL",
 {
 method:"POST",
 
@@ -33,8 +33,6 @@ password:password
 
 const result = await response.json()
 
-console.log(result)
-
 if(result.status == "success"){
 
 localStorage.setItem(
@@ -42,8 +40,7 @@ localStorage.setItem(
 JSON.stringify(result.student)
 )
 
-window.location.href =
-"dashboard.html"
+window.location.href = "dashboard.html"
 
 }else{
 
