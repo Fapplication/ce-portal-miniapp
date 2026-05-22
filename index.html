@@ -9,82 +9,69 @@
 <body>
     <div class="container">
         <div class="left-banner">
-            <div class="brand">
-                <span class="icon">📖</span> <strong>University Portal</strong>
-            </div>
+            <div class="brand">📖 <strong>University Portal</strong></div>
             <h1>Empowering your academic journey.</h1>
-            <p>Access your secure records, submit inquiries, and manage your student profile.</p>
+            <p>Access your secure records, review weighted assessment metrics, and manage your student profile.</p>
             <div class="footer-text">© 2026 University Administration.</div>
         </div>
 
         <div class="right-content">
-            
             <div id="auth-card" class="card">
-                <h2 id="auth-title">Student Login</h2>
-                <p id="auth-subtitle">Enter your credentials to access your academic records.</p>
+                <h2 id="auth-title">Portal Access</h2>
+                <p id="auth-subtitle">Enter your institutional identification credentials.</p>
                 
                 <form id="auth-form">
-                    <div class="form-group" id="name-group" style="display: none;">
-                        <label for="reg-name">Full Name</label>
-                        <input type="text" id="reg-name" placeholder="John Doe">
-                    </div>
                     <div class="form-group">
-                        <label for="email">University Email</label>
-                        <input type="email" id="email" required placeholder="user@domain.com">
+                        <label for="userId">Identification Number (ID)</label>
+                        <input type="text" id="userId" required placeholder="e.g., UGR-1234-18">
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
                         <input type="password" id="password" required placeholder="••••">
                     </div>
-                    <div class="form-group" id="role-group" style="display: none;">
-                        <label for="role">Role</label>
-                        <select id="role">
-                            <option value="student">Student</option>
-                            <option value="admin">Admin</option>
-                        </select>
-                    </div>
                     <button type="submit" id="submit-btn" class="primary-btn">Sign In</button>
                 </form>
                 <div class="toggle-auth">
-                    <a href="#" id="toggle-link">Don't have an account? Register here</a>
+                    <a href="#" id="toggle-link">First time? Register your pre-authorized ID here</a>
                 </div>
             </div>
 
-            <div id="student-dashboard" class="card" style="display: none;">
-                <h2>Welcome, <span id="student-display-name">Student</span>!</h2>
-                <h3>Your Academic Record</h3>
-                <table class="data-table">
-                    <thead>
-                        <tr><th>Subject</th><th>Mark</th></tr>
-                    </thead>
-                    <tbody id="student-marks-body"></tbody>
-                </table>
+            <div id="student-dashboard" class="dashboard-card" style="display: none;">
+                <h2>Welcome back, <span id="student-display-name">Student</span>!</h2>
+                <p>Academic Assessment Performance Ledger</p>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Subject Course</th>
+                                <th>Quiz (10%)</th>
+                                <th>Mid (20%)</th>
+                                <th>Assign (20%)</th>
+                                <th>Final (50%)</th>
+                                <th>Total (100%)</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-marks-body"></tbody>
+                    </table>
+                </div>
                 <button class="secondary-btn" onclick="logout()">Sign Out</button>
             </div>
 
             <div id="admin-dashboard" class="card" style="display: none;">
-                <h2>Administrator Dashboard</h2>
-                <div class="admin-panel">
-                    <h3>Assign & Update Marks</h3>
-                    <form id="mark-form">
-                        <div class="form-group">
-                            <label>Student Target Email</label>
-                            <input type="email" id="target-email" required placeholder="student@gmail.com">
-                        </div>
-                        <div class="form-group">
-                            <label>Course Subject</label>
-                            <input type="text" id="target-subject" required placeholder="Structural Engineering">
-                        </div>
-                        <div class="form-group">
-                            <label>Assigned Mark</label>
-                            <input type="number" id="target-mark" required min="0" max="100" placeholder="85">
-                        </div>
-                        <button type="submit" class="primary-btn">Submit Mark Entry</button>
-                    </form>
-                </div>
+                <h2>Instructor Grading Suite</h2>
+                <p>Publish weighted assessment values directly to cloud tables.</p>
+                <form id="mark-form">
+                    <div class="form-group"><label>Student ID</label><input type="text" id="target-id" required></div>
+                    <div class="form-group"><label>Course Subject</label><input type="text" id="target-subject" required></div>
+                    <div class="form-group"><label>Quiz (Max 10)</label><input type="number" id="m-quiz" step="0.01" min="0" max="10" required></div>
+                    <div class="form-group"><label>Mid Exam (Max 20)</label><input type="number" id="m-mid" step="0.01" min="0" max="20" required></div>
+                    <div class="form-group"><label>Assignment (Max 20)</label><input type="number" id="m-assign" step="0.01" min="0" max="20" required></div>
+                    <div class="form-group"><label>Final Exam (Max 50)</label><input type="number" id="m-final" step="0.01" min="0" max="50" required></div>
+                    <button type="submit" class="primary-btn">Commit Grades</button>
+                </form>
                 <button class="secondary-btn" onclick="logout()">Sign Out</button>
             </div>
-
         </div>
     </div>
     <script src="app.js"></script>
