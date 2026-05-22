@@ -16,7 +16,7 @@ document.getElementById("loginPassword").value
 try{
 
 const response = await fetch(
-"YOUR_WEB_APP_URL",
+"https://script.google.com/macros/s/AKfycbw4ogBvGCINM25cXPdxjnbobI1wEskVjtTVi4b_S2stwt6mNhYujuP_KMYfC2CoS5Z5/exec",
 {
 method:"POST",
 
