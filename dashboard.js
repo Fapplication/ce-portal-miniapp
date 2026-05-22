@@ -16,9 +16,25 @@ document.getElementById("studentInfo").innerHTML = `
 
 <p><strong>Course:</strong> ${student.course}</p>
 
-<p><strong>Marks:</strong> ${student.marks}</p>
-
 `
+
+document.getElementById("mid").innerHTML =
+student.mid
+
+document.getElementById("test").innerHTML =
+student.test
+
+document.getElementById("assignment").innerHTML =
+student.assignment
+
+document.getElementById("final").innerHTML =
+student.final
+
+document.getElementById("total").innerHTML =
+student.total
+
+document.getElementById("grade").innerHTML =
+student.grade
 
 async function sendComplaint(){
 
