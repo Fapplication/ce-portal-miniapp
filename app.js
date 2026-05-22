@@ -1,5 +1,5 @@
 // Replace this variable value completely with your deployed Google Web App Link URL
-const API_URL = "https://script.google.com/macros/s/AKfycbz78NXIyGlq1hDco9aOJxtSARICnLQx87tow4SDpO4unAf6vVwN9cOD5n9NA_dZ-e4a/exec"; 
+const API_URL = "https://script.google.com/macros/s/AKfycbz8ZWwbKgHq_gfoV3cyECQQZmzfwLbecRaY3N5vRvV-t9QfuwtXoBoGnjAGJP__R_4/exec"; 
 
 let isLoginMode = true;
 
