@@ -38,9 +38,9 @@ toggleLink.addEventListener("click", (e) => {
 authForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     
-    const email = document.getElementById("email").value;
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-    const name = document.getElementById("reg-name").value;
+    const name = document.getElementById("reg-name").value.trim();
     const role = document.getElementById("role").value;
 
     const payload = isLoginMode 
@@ -51,25 +51,28 @@ authForm.addEventListener("submit", async (e) => {
     submitBtn.disabled = true;
 
     try {
+        // Send request directly via standard POST execution context
         const response = await fetch(API_URL, {
             method: "POST",
-            mode: "no-cors", // Required to execute cross-domain apps script instances smoothly
             body: JSON.stringify(payload)
         });
-
-        // Due to standard no-cors mode restrictions, fetch calls will skip structural return data mapping directly.
-        // For a seamless application wrapper, we request the validation sequence below:
-        const validationPayload = { action: "login", email, password };
-        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(validationPayload) });
-        const result = await res.json();
+        
+        const result = await response.json();
 
         if (result.success) {
-            routeUserDashboard(result);
+            if (isLoginMode) {
+                routeUserDashboard(result);
+            } else {
+                alert("Account created successfully! Switching to Login screen.");
+                isLoginMode = true;
+                toggleLink.click();
+                authForm.reset();
+            }
         } else {
-            alert(isLoginMode ? "Invalid username or password match configuration." : "Account created successfully! Switching to Login screen.");
-            if(!isLoginMode) { toggleLink.click(); authForm.reset(); }
+            alert(result.message || "Invalid username or password match configuration.");
         }
     } catch (err) {
+        console.error(err);
         alert("Server validation connection timed out. Confirm script configuration setup matches exactly.");
     } finally {
         submitBtn.innerText = isLoginMode ? "Sign In" : "Sign Up";
