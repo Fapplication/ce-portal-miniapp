@@ -1,12 +1,13 @@
-const student = JSON.parse(
+const studentData =
 localStorage.getItem("student")
-)
 
-if(!student){
+if(!studentData){
 
 window.location.href = "login.html"
 
 }
+
+const student = JSON.parse(studentData)
 
 document.getElementById("studentInfo").innerHTML = `
 
@@ -63,7 +64,7 @@ alert("Complaint Submitted")
 
 function logout(){
 
-localStorage.clear()
+localStorage.removeItem("student")
 
 window.location.href = "login.html"
 
