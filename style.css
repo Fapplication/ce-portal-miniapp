@@ -1,69 +1,63 @@
-.logo-wrapper {
-    background-color: #ffffff; /* Gives the logo a clean white background card so it's fully visible */
-    padding: 12px 20px; /* Internal spacing around the logo edges */
-    border-radius: 8px; /* Smooth professional rounded corners */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Soft premium shadow drop */
-    
-    width: 100%;
-    max-width: 260px; /* Standard structural width */
-    margin-bottom: 30px; /* Clear space before your portal text title begins */
-    display: inline-block;
+:root {
+    --primary-blue: #1d2d5b;
+    --text-dark: #222222;
+    --text-muted: #666666;
+    --bg-light: #f4f6f9;
+    --border-color: #cccccc;
 }
 
-/* Forces logo image to display perfectly inside its new frame */
-.university-logo {
-    width: 100%;
-    height: auto;
-    display: block;
-    object-fit: contain;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, system-ui, sans-serif; }
+body { background-color: #ffffff; color: var(--text-dark); min-height: 100vh; }
+.container { display: flex; min-height: 100vh; flex-wrap: wrap; }
 
-/* Reset the brand layout positioning to prevent it from pinning to a tiny absolute corner */
-.left-banner .brand {
-    position: static !important; /* Overrides any old absolute thumbnail positioning */
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-/* Container for the logo inside the left banner */
-.logo-wrapper {
-    width: 100%;
-    max-width: 280px; /* Perfect desktop display size for horizontal university badges */
-    margin-bottom: 25px; /* Creates clean spacing between logo and 'FB Result Record Portal' text */
-    display: block;
-}
-
-/* Forces logo image to stay perfectly responsive and proportional */
-.university-logo {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-}
-
-/* Adjust layout rules inside the left banner to allow stacked layout flow */
 .left-banner {
+    background-color: var(--primary-blue);
+    color: #ffffff;
+    width: 35%;
+    padding: 40px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
-    padding: 60px 40px;
+    position: relative;
 }
 
-/* Make your branding elements position elegantly within the new layout flow */
-.left-banner .brand {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-    color: #ffffff;
+.left-banner h1 { font-size: 2.8rem; margin-bottom: 16px; line-height: 1.2; }
+.left-banner p { opacity: 0.8; font-size: 1.1rem; }
+.left-banner .brand { position: absolute; top: 40px; }
+.left-banner .footer-text { position: absolute; bottom: 40px; font-size: 0.8rem; opacity: 0.5; }
+
+.right-content {
+    width: 65%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    background-color: #ffffff;
 }
 
-/* Responsive adjust for tablets and mobile screens */
+.card { width: 100%; max-width: 420px; }
+.dashboard-card { width: 100%; padding: 20px; }
+h2 { color: var(--primary-blue); font-size: 2rem; margin-bottom: 6px; }
+
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 4px; }
+.form-group input { width: 100%; padding: 10px 14px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 1rem; }
+
+.primary-btn { width: 100%; background-color: var(--primary-blue); color: white; padding: 12px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+.secondary-btn { background: none; border: 1px solid var(--primary-blue); color: var(--primary-blue); padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 20px; }
+.toggle-auth { text-align: center; margin-top: 15px; }
+.toggle-auth a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
+
+/* Responsive Table Styles */
+.table-wrapper { width: 100%; overflow-x: auto; margin-top: 20px; border: 1px solid var(--border-color); border-radius: 6px; }
+.data-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+.data-table th, .data-table td { padding: 12px; border-bottom: 1px solid #e0e0e0; text-align: left; font-size: 0.95rem; }
+.data-table th { background-color: var(--bg-light); color: var(--primary-blue); font-weight: 600; }
+.data-table tr:last-child td { border-bottom: none; }
+
 @media (max-width: 1024px) {
-    .logo-wrapper {
-        max-width: 220px; /* Slightly more compact on mobile screens */
-        margin-top: 20px;
-    }
+    .container { flex-direction: column; }
+    .left-banner, .right-content { width: 100%; position: static; padding: 40px 20px; }
+    .left-banner { min-height: 200px; }
+    .left-banner .brand, .left-banner .footer-text { position: static; margin-bottom: 20px; }
 }
