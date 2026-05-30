@@ -2,7 +2,7 @@
 .logo-wrapper {
     background-color: #ffffff; /* Gives the logo a clean white background card so it's fully visible */
     padding: 12px 20px; /* Internal spacing around the logo edges */
-    border-radius: 8px; /* Smooth professional rounded corners */
+    border-radius: 0px; /* Smooth professional rounded corners */
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Soft premium shadow drop */
     
     width: 100%;
