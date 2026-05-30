@@ -31,7 +31,7 @@
 /* Reset the brand layout positioning to prevent it from pinning to a tiny absolute corner */
 .left-banner .brand {
     position: static !important; /* Overrides any old absolute thumbnail positioning */
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 20px;
     color: #ffffff;
