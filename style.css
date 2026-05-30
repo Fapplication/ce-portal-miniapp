@@ -15,7 +15,7 @@
 .university-logo {
     width: 100%;
     height: auto;
-    display: block;
+    display: none;
     object-fit: contain;
 }
 
