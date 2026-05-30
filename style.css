@@ -1,22 +1,31 @@
 /* Container for the logo inside the left banner */
 .logo-wrapper {
-    background-color: #ffffff; /* Gives the logo a clean white background card so it's fully visible */
-    padding: 12px 20px; /* Internal spacing around the logo edges */
-    border-radius: 0px; /* Smooth professional rounded corners */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Soft premium shadow drop */
+    background-color: transparent; /* Removes the white background card completely */
+    padding: 0; /* Removes the extra padding that caused the thick frame look */
     
     width: 100%;
-    max-width: 260px; /* Standard structural width */
-    margin-bottom: 30px; /* Clear space before your portal text title begins */
-    display: inline-block;
+    max-width: 280px; /* Keeps a professional display width for the university badge */
+    margin: 0 auto 30px auto; /* Centers the wrapper horizontally and keeps spacing below it */
+    display: block; /* Block display allows auto margins to center it */
+    text-align: center; /* Centers the image inline element inside the wrapper */
 }
 
-/* Forces logo image to display perfectly inside its new frame */
+/* Forces logo image to display perfectly inside its frame */
 .university-logo {
     width: 100%;
     height: auto;
-    display: none;
+    display: inline-block; /* CHANGED from 'none' so your logo is actually visible */
     object-fit: contain;
+}
+
+/* Ensure the left banner container centers its children smoothly */
+.left-banner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; /* Centers the title, paragraph, and logo horizontally */
+    text-align: center; /* Centers all internal text lines */
+    padding: 60px 40px;
 }
 
 /* Reset the brand layout positioning to prevent it from pinning to a tiny absolute corner */
