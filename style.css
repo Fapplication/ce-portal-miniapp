@@ -1,3 +1,35 @@
+/* Container for the logo inside the left banner */
+.logo-wrapper {
+    background-color: #ffffff; /* Gives the logo a clean white background card so it's fully visible */
+    padding: 12px 20px; /* Internal spacing around the logo edges */
+    border-radius: 8px; /* Smooth professional rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* Soft premium shadow drop */
+    
+    width: 100%;
+    max-width: 260px; /* Standard structural width */
+    margin-bottom: 30px; /* Clear space before your portal text title begins */
+    display: inline-block;
+}
+
+/* Forces logo image to display perfectly inside its new frame */
+.university-logo {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+
+/* Reset the brand layout positioning to prevent it from pinning to a tiny absolute corner */
+.left-banner .brand {
+    position: static !important; /* Overrides any old absolute thumbnail positioning */
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 :root {
     --primary-blue: #1d2d5b;
     --text-dark: #222222;
