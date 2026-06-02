@@ -1,5 +1,4 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbxSP9sQHtr7jbKSoCl-llUbYt-JkbTFP6nc0U1MsYT362DHe81xBWMIIiAUXaulMOhj/exec"; 
-
 let isLoginMode = true;
 const authForm = document.getElementById("auth-form");
 const toggleLink = document.getElementById("toggle-link");
