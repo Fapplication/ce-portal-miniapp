@@ -12,7 +12,7 @@ password:document.getElementById("password").value,
 course:document.getElementById("course").value
 }
 
-await fetch("https://script.google.com/macros/s/AKfycbxAw2GI1gTjMFdutXHhd-IbIf345Le6ciZ-QXn8qAVztk5PrHwUjYfxuRxXZ3YUbzn2/exec",{
+await fetch("https://script.google.com/macros/s/AKfycbyQH5jvZR9UqLdP12Fdn6Ai5kqzjm5xOMhx9gLInmjvVuga-v2amszTBvyCwDPzAp3z/exec",{
 method:"POST",
 body:JSON.stringify(data)
 })
