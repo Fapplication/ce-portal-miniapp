@@ -1,7 +1,5 @@
-// Paste your newest deployment endpoint macro URL string below
 const API_URL = "https://script.google.com/macros/s/AKfycbw5I6LxE2nVGvSN84u4Q8PaEytjGQhpJP9WyjkBSG4i33joXVuYUdk0adB_Sc7Fej4z/exec"; 
 let isLoginMode = true;
-
 const authForm = document.getElementById("auth-form");
 const toggleLink = document.getElementById("toggle-link");
 const authTitle = document.getElementById("auth-title");
@@ -27,8 +25,8 @@ toggleLink.addEventListener("click", (e) => {
 
 authForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const id = document.getElementById("userId").value.trim();
-    const password = document.getElementById("password").value.trim();
+    const id = document.getElementById("userId").value;
+    const password = document.getElementById("password").value;
 
     const payload = isLoginMode 
         ? { action: "login", id, password }
@@ -38,11 +36,7 @@ authForm.addEventListener("submit", async (e) => {
     submitBtn.disabled = true;
 
     try {
-        const response = await fetch(API_URL, { 
-            method: "POST", 
-            mode: "cors", // Forces explicit Cross-Origin Request Handshake
-            body: JSON.stringify(payload) 
-        });
+        const response = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
         const result = await response.json();
 
         if (result.success) {
@@ -76,7 +70,7 @@ function routeUserDashboard(user) {
 }
 
 async function loadStudentMarks(id) {
-    const response = await fetch(API_URL, { method: "POST", mode: "cors", body: JSON.stringify({ action: "getMarks", id }) });
+    const response = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "getMarks", id }) });
     const result = await response.json();
     const container = document.getElementById("student-marks-body");
     container.innerHTML = "";
@@ -95,7 +89,7 @@ async function loadStudentMarks(id) {
                 </tr>`;
         });
     } else {
-        container.innerHTML = `<tr><td colspan="7" style="text-align:center;">No nominated course tab markings found under this student profile row.</td></tr>`;
+        container.innerHTML = `<tr><td colspan="7" style="text-align:center;">No published marks found under this student ID.</td></tr>`;
     }
 }
 
@@ -103,25 +97,19 @@ document.getElementById("mark-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const payload = {
         action: "updateMark",
-        id: document.getElementById("target-id").value.trim(),
+        id: document.getElementById("target-id").value,
         subject: document.getElementById("target-subject").value,
-        quiz: parseFloat(document.getElementById("m-quiz").value) || 0,
-        mid: parseFloat(document.getElementById("m-mid").value) || 0,
-        assignment: parseFloat(document.getElementById("m-assign").value) || 0,
-        final: parseFloat(document.getElementById("m-final").value) || 0
+        quiz: parseFloat(document.getElementById("m-quiz").value),
+        mid: parseFloat(document.getElementById("m-mid").value),
+        assignment: parseFloat(document.getElementById("m-assign").value),
+        final: parseFloat(document.getElementById("m-final").value)
     };
 
-    try {
-        const res = await fetch(API_URL, { method: "POST", mode: "cors", body: JSON.stringify(payload) });
-        const result = await res.json();
-        if (result.success) {
-            alert(result.message);
-            document.getElementById("mark-form").reset();
-        } else {
-            alert(result.message);
-        }
-    } catch (err) {
-        alert("Failed to publish marks to the cloud registry sheet.");
+    const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+    const result = await res.json();
+    if (result.success) {
+        alert(result.message);
+        document.getElementById("mark-form").reset();
     }
 });
 
