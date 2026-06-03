@@ -42,7 +42,7 @@ async function sendComplaint(){
 const complaint =
 document.getElementById("complaint").value
 
-await fetch("https://script.google.com/macros/s/AKfycbzNbI_ahaAXsod_YQ43--6wuncIIdT5EAh-0HG-8bnywONGMcWnUmDDfZl_zsk0c-9W/exec",{
+await fetch("https://script.google.com/macros/s/AKfycbyzNKlZRytl0ha9TS46vHJE2dBFRNH018leSTahjGFyuiEvhe9y9GQnrBcQVNgxIsLH/exec",{
 
 method:"POST",
 
