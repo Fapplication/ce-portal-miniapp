@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // CONFIG — must match your Apps Script deployment URL exactly
 // ═══════════════════════════════════════════════════════════
-const API_URL = "https://script.google.com/macros/s/AKfycbwIBwmdPOdtaISQVR1zxTlmWH7-cG0g1_56Gj4LIhvVfpY5ZTOgWMP6-Hpx268uFciR/exec"; // <-- same URL in both files
+const API_URL = "https://script.google.com/macros/s/AKfycbw0LbbLZRE81DlLqqzZBTUjiIqTIypkCKkcyCjakW5KAZDTXuKltV3PNYfEDvZ0rVRD/exec"; // <-- same URL in both files
 
 // ═══════════════════════════════════════════════════════════
 // CORE FETCH HELPER
