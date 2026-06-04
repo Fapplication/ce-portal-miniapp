@@ -1,26 +1,43 @@
 // ═══════════════════════════════════════════════════════════
-// CONFIG — must match your Apps Script deployment URL exactly
+// CONFIG — paste your Apps Script /exec URL here
 // ═══════════════════════════════════════════════════════════
-const API_URL = "https://script.google.com/macros/s/AKfycbw0LbbLZRE81DlLqqzZBTUjiIqTIypkCKkcyCjakW5KAZDTXuKltV3PNYfEDvZ0rVRD/exec"; // <-- same URL in both files
+const API_URL = "https://script.google.com/macros/s/AKfycbw_J_NyUB1YMtHdmZpOi1hTNAYPySJTGI5wr5ki2ym0yUSIG15OgU7WHYUvhH7lKBjG/exec";
 
 // ═══════════════════════════════════════════════════════════
 // CORE FETCH HELPER
-// Uses "no-cors" is WRONG — we need the response.
-// The fix is: Apps Script returns HtmlService output which
-// allows cross-origin reads. We read it as text then parse.
+// KEY FIX: Do NOT set Content-Type header at all.
+// When Content-Type is omitted, the browser sends a "simple"
+// request with no preflight OPTIONS check.
+// Apps Script reads the body fine without the header.
 // ═══════════════════════════════════════════════════════════
 async function apiCall(payload) {
-  const response = await fetch(API_URL, {
-    method:  "POST",
-    headers: { "Content-Type": "text/plain" }, // text/plain avoids preflight CORS check
-    body:    JSON.stringify(payload)
-  });
-  const text = await response.text();
   try {
-    return JSON.parse(text);
-  } catch (e) {
-    console.error("Failed to parse response:", text);
-    throw new Error("Invalid server response");
+    const response = await fetch(API_URL, {
+      method:   "POST",
+      body:     JSON.stringify(payload)
+      // ← NO headers object at all — this is intentional
+      // Adding Content-Type: application/json triggers a
+      // preflight that Apps Script cannot respond to,
+      // causing "Failed to fetch"
+    });
+
+    if (!response.ok) {
+      throw new Error("HTTP " + response.status + ": " + response.statusText);
+    }
+
+    const text = await response.text();
+    console.log("Raw API response:", text);
+
+    try {
+      return JSON.parse(text);
+    } catch (parseErr) {
+      console.error("Could not parse JSON:", text);
+      throw new Error("Server returned invalid response. Check Apps Script logs.");
+    }
+
+  } catch (err) {
+    console.error("apiCall failed:", err);
+    throw err;
   }
 }
 
@@ -29,11 +46,11 @@ async function apiCall(payload) {
 // ═══════════════════════════════════════════════════════════
 let isLoginMode = true;
 
-const authForm    = document.getElementById("auth-form");
-const toggleLink  = document.getElementById("toggle-link");
-const authTitle   = document.getElementById("auth-title");
+const authForm     = document.getElementById("auth-form");
+const toggleLink   = document.getElementById("toggle-link");
+const authTitle    = document.getElementById("auth-title");
 const authSubtitle = document.getElementById("auth-subtitle");
-const submitBtn   = document.getElementById("submit-btn");
+const submitBtn    = document.getElementById("submit-btn");
 
 toggleLink.addEventListener("click", (e) => {
   e.preventDefault();
@@ -59,10 +76,17 @@ authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id       = document.getElementById("userId").value.trim();
   const password = document.getElementById("password").value.trim();
-  const payload  = isLoginMode
+
+  if (!id || !password) {
+    alert("Please enter both Student ID and Password.");
+    return;
+  }
+
+  const payload = isLoginMode
     ? { action: "login",    id, password }
     : { action: "register", id, password };
 
+  const originalText  = submitBtn.innerText;
   submitBtn.innerText = "Connecting...";
   submitBtn.disabled  = true;
 
@@ -73,30 +97,35 @@ authForm.addEventListener("submit", async (e) => {
       if (isLoginMode) {
         routeUserDashboard(result);
       } else {
-        alert("✅ Account created successfully! Signing you in...");
-        // Auto sign-in after registration
+        alert("✅ Account created! Signing you in...");
         const loginResult = await apiCall({ action: "login", id, password });
         if (loginResult.success) {
           routeUserDashboard(loginResult);
         } else {
           isLoginMode = true;
-          updateFormForLogin();
-          alert("Account created. Please sign in.");
+          setFormToLogin();
+          alert("Account created. Please sign in manually.");
         }
       }
     } else {
-      alert("⚠️ " + result.message);
+      alert("⚠️ " + (result.message || "Unknown error."));
     }
+
   } catch (err) {
-    console.error("API error:", err);
-    alert("❌ Connection error: " + err.message + "\n\nCheck the browser console for details.");
+    alert(
+      "❌ Connection Error: " + err.message + "\n\n" +
+      "Checklist:\n" +
+      "1. Is the API_URL in app.js correct?\n" +
+      "2. Is the deployment set to 'Anyone' access?\n" +
+      "3. Open browser DevTools → Console for full error."
+    );
   } finally {
-    submitBtn.innerText = isLoginMode ? "Sign In" : "Complete Registration";
+    submitBtn.innerText = originalText;
     submitBtn.disabled  = false;
   }
 });
 
-function updateFormForLogin() {
+function setFormToLogin() {
   authTitle.innerText    = "Portal Access";
   authSubtitle.innerText = "Enter your institutional identification credentials.";
   submitBtn.innerText    = "Sign In";
@@ -111,7 +140,7 @@ function routeUserDashboard(user) {
   if (user.role === "admin") {
     document.getElementById("admin-dashboard").style.display = "block";
   } else {
-    document.getElementById("student-display-name").innerText = user.name;
+    document.getElementById("student-display-name").innerText = user.name || user.id;
     document.getElementById("student-dashboard").style.display = "block";
     loadStudentMarks(user.id);
   }
@@ -122,12 +151,12 @@ function routeUserDashboard(user) {
 // ═══════════════════════════════════════════════════════════
 async function loadStudentMarks(id) {
   const container = document.getElementById("student-marks-body");
-  container.innerHTML = `<tr><td colspan="7" style="text-align:center;">Loading marks...</td></tr>`;
+  container.innerHTML = `<tr><td colspan="7" style="text-align:center;">⏳ Loading marks...</td></tr>`;
 
   try {
     const result = await apiCall({ action: "getMarks", id });
-    container.innerHTML = "";
 
+    container.innerHTML = "";
     if (result.success && result.data && result.data.length > 0) {
       result.data.forEach(item => {
         container.innerHTML += `
@@ -142,7 +171,7 @@ async function loadStudentMarks(id) {
           </tr>`;
       });
     } else {
-      container.innerHTML = `<tr><td colspan="7" style="text-align:center;">No published marks found.</td></tr>`;
+      container.innerHTML = `<tr><td colspan="7" style="text-align:center;">No published marks found for this ID.</td></tr>`;
     }
   } catch (err) {
     container.innerHTML = `<tr><td colspan="7" style="text-align:center;color:red;">Error loading marks: ${err.message}</td></tr>`;
@@ -152,26 +181,34 @@ async function loadStudentMarks(id) {
 // ═══════════════════════════════════════════════════════════
 // ADMIN: UPDATE MARKS
 // ═══════════════════════════════════════════════════════════
-document.getElementById("mark-form").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const payload = {
-    action:     "updateMark",
-    id:         document.getElementById("target-id").value.trim(),
-    subject:    document.getElementById("target-subject").value,
-    quiz:       parseFloat(document.getElementById("m-quiz").value),
-    mid:        parseFloat(document.getElementById("m-mid").value),
-    assignment: parseFloat(document.getElementById("m-assign").value),
-    final:      parseFloat(document.getElementById("m-final").value)
-  };
+const markForm = document.getElementById("mark-form");
+if (markForm) {
+  markForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const payload = {
+      action:     "updateMark",
+      id:         document.getElementById("target-id").value.trim(),
+      subject:    document.getElementById("target-subject").value,
+      quiz:       parseFloat(document.getElementById("m-quiz").value)     || 0,
+      mid:        parseFloat(document.getElementById("m-mid").value)      || 0,
+      assignment: parseFloat(document.getElementById("m-assign").value)   || 0,
+      final:      parseFloat(document.getElementById("m-final").value)    || 0
+    };
 
-  try {
-    const result = await apiCall(payload);
-    alert(result.success ? "✅ " + result.message : "⚠️ " + result.message);
-    if (result.success) document.getElementById("mark-form").reset();
-  } catch (err) {
-    alert("❌ Error: " + err.message);
-  }
-});
+    if (!payload.id || !payload.subject) {
+      alert("Please fill in the Student ID and select a subject.");
+      return;
+    }
+
+    try {
+      const result = await apiCall(payload);
+      alert(result.success ? "✅ " + result.message : "⚠️ " + result.message);
+      if (result.success) markForm.reset();
+    } catch (err) {
+      alert("❌ Error saving marks: " + err.message);
+    }
+  });
+}
 
 // ═══════════════════════════════════════════════════════════
 // LOGOUT
