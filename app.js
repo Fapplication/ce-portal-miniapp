@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════
 // CONFIG — paste your Apps Script /exec URL here
 // ═══════════════════════════════════════════════════════════
-const API_URL = "https://script.google.com/macros/s/AKfycbxNVqhJeiPFEcKSL7yVuWBIfxlSLE8m2fs_BH1YR4RIxWLoRcWEJf_RlUpIchFR4nMq/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxag3kbACfwOiA7zc4pEHY-euD0lZ9E2sv0RmzAqWxajxzw2xPzPE5ZPTdDcJPhkPrT/exec";
 
 // ═══════════════════════════════════════════════════════════
 // CORE FETCH HELPER
