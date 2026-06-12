@@ -5,20 +5,13 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwUXxjUyyy2nLPunaCIK5T0
 
 // ═══════════════════════════════════════════════════════════
 // CORE FETCH HELPER
-// KEY FIX: Do NOT set Content-Type header at all.
-// When Content-Type is omitted, the browser sends a "simple"
-// request with no preflight OPTIONS check.
-// Apps Script reads the body fine without the header.
 // ═══════════════════════════════════════════════════════════
 async function apiCall(payload) {
   try {
     const response = await fetch(API_URL, {
       method:   "POST",
-      body:     JSON.stringify(payload)
-      // ← NO headers object at all — this is intentional
-      // Adding Content-Type: application/json triggers a
-      // preflight that Apps Script cannot respond to,
-      // causing "Failed to fetch"
+      body:     JSON.stringify(payload) 
+      // Omit headers intentionally to bypass CORS preflight complications
     });
 
     if (!response.ok) {
@@ -69,9 +62,6 @@ toggleLink.addEventListener("click", (e) => {
   }
 });
 
-// ═══════════════════════════════════════════════════════════
-// SUBMIT HANDLER
-// ═══════════════════════════════════════════════════════════
 authForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const id       = document.getElementById("userId").value.trim();
@@ -115,7 +105,7 @@ authForm.addEventListener("submit", async (e) => {
     alert(
       "❌ Connection Error: " + err.message + "\n\n" +
       "Checklist:\n" +
-      "1. Is the API_URL in app.js correct?\n" +
+      "1. Is the API_URL correct?\n" +
       "2. Is the deployment set to 'Anyone' access?\n" +
       "3. Open browser DevTools → Console for full error."
     );
@@ -151,7 +141,7 @@ function routeUserDashboard(user) {
 // ═══════════════════════════════════════════════════════════
 async function loadStudentMarks(id) {
   const container = document.getElementById("student-marks-body");
-  container.innerHTML = `<tr><td colspan="7" style="text-align:center;">⏳ Loading marks...</td></tr>`;
+  container.innerHTML = `<tr><td colspan="6" style="text-align:center;">⏳ Loading marks...</td></tr>`;
 
   try {
     const result = await apiCall({ action: "getMarks", id });
@@ -162,24 +152,23 @@ async function loadStudentMarks(id) {
         container.innerHTML += `
           <tr>
             <td><strong>${item.subject}</strong></td>
-            <td>${item.quiz} / 10</td>
+            <td>${item.assessment} / 30</td>
             <td>${item.mid} / 20</td>
-            <td>${item.assignment} / 20</td>
             <td>${item.final} / 50</td>
             <td><strong>${item.total} / 100</strong></td>
             <td><span class="badge">${item.grade}</span></td>
           </tr>`;
       });
     } else {
-      container.innerHTML = `<tr><td colspan="7" style="text-align:center;">No published marks found for this ID.</td></tr>`;
+      container.innerHTML = `<tr><td colspan="6" style="text-align:center;">No published marks found for this ID.</td></tr>`;
     }
   } catch (err) {
-    container.innerHTML = `<tr><td colspan="7" style="text-align:center;color:red;">Error loading marks: ${err.message}</td></tr>`;
+    container.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;">Error loading marks: ${err.message}</td></tr>`;
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-// ADMIN: UPDATE MARKS
+// ADMIN: UPDATE MARKS (FIXED: Added administrative credentials)
 // ═══════════════════════════════════════════════════════════
 const markForm = document.getElementById("mark-form");
 if (markForm) {
@@ -189,10 +178,11 @@ if (markForm) {
       action:     "updateMark",
       id:         document.getElementById("target-id").value.trim(),
       subject:    document.getElementById("target-subject").value,
-      quiz:       parseFloat(document.getElementById("m-quiz").value)     || 0,
+      assessment: parseFloat(document.getElementById("m-quiz").value)     || 0, // Maps to your Assessment form field
       mid:        parseFloat(document.getElementById("m-mid").value)      || 0,
-      assignment: parseFloat(document.getElementById("m-assign").value)   || 0,
-      final:      parseFloat(document.getElementById("m-final").value)    || 0
+      final:      parseFloat(document.getElementById("m-final").value)    || 0,
+      adminId:    "admin",     // Explicit credentials verification fix
+      adminPassword: "admin123" 
     };
 
     if (!payload.id || !payload.subject) {
@@ -210,9 +200,6 @@ if (markForm) {
   });
 }
 
-// ═══════════════════════════════════════════════════════════
-// LOGOUT
-// ═══════════════════════════════════════════════════════════
 function logout() {
   window.location.reload();
 }
