@@ -123,21 +123,23 @@ function setFormToLogin() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// DASHBOARD ROUTING
+// DASHBOARD ROUTING (FIXED: Live-extracts First Name only)
 // ═══════════════════════════════════════════════════════════
 function routeUserDashboard(user) {
   document.getElementById("auth-card").style.display = "none";
   if (user.role === "admin") {
     document.getElementById("admin-dashboard").style.display = "block";
   } else {
-    document.getElementById("student-display-name").innerText = user.name || user.id;
+    // Isolates and parses first name string index token safely to say e.g., Welcome Aboma
+    const firstName = user.name ? user.name.split(" ")[0] : "Student";
+    document.getElementById("student-display-name").innerText = firstName;
     document.getElementById("student-dashboard").style.display = "block";
     loadStudentMarks(user.id);
   }
 }
 
 // ═══════════════════════════════════════════════════════════
-// MARKS LOADER
+// MARKS LOADER (FIXED: Aligned to 30% / 20% / 50% Metrics)
 // ═══════════════════════════════════════════════════════════
 async function loadStudentMarks(id) {
   const container = document.getElementById("student-marks-body");
@@ -168,7 +170,7 @@ async function loadStudentMarks(id) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// ADMIN: UPDATE MARKS (FIXED: Added administrative credentials)
+// ADMIN: UPDATE MARKS (FIXED: Pushes 3 updated metrics columns)
 // ═══════════════════════════════════════════════════════════
 const markForm = document.getElementById("mark-form");
 if (markForm) {
@@ -177,11 +179,11 @@ if (markForm) {
     const payload = {
       action:     "updateMark",
       id:         document.getElementById("target-id").value.trim(),
-      subject:    document.getElementById("target-subject").value,
-      assessment: parseFloat(document.getElementById("m-quiz").value)     || 0, // Maps to your Assessment form field
+      subject:    document.getElementById("target-subject").value, // Matches "Geometric Design of Highway and Street (CEng 3201)"
+      assessment: parseFloat(document.getElementById("m-quiz").value)     || 0, 
       mid:        parseFloat(document.getElementById("m-mid").value)      || 0,
       final:      parseFloat(document.getElementById("m-final").value)    || 0,
-      adminId:    "admin",     // Explicit credentials verification fix
+      adminId:    "admin",
       adminPassword: "admin123" 
     };
 
