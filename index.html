@@ -1,79 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>University Portal</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FB Educational Portal</title>
+  <link rel="stylesheet" href="style.css"> </head>
 <body>
-    <div class="container">
-        <div class="left-banner">
-            <div class="brand">📖 <strong>University Portal</strong></div>
-            <h1>Empowering your academic journey.</h1>
-            <p>Access your secure records, review weighted assessment metrics, and manage your student profile.</p>
-            <div class="footer-text">© 2026 University Administration.</div>
-        </div>
 
-        <div class="right-content">
-            <div id="auth-card" class="card">
-                <h2 id="auth-title">Portal Access</h2>
-                <p id="auth-subtitle">Enter your institutional identification credentials.</p>
-                
-                <form id="auth-form">
-                    <div class="form-group">
-                        <label for="userId">Identification Number (ID)</label>
-                        <input type="text" id="userId" required placeholder="e.g., UGR-1234-18">
-                    </div>
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" required placeholder="••••">
-                    </div>
-                    <button type="submit" id="submit-btn" class="primary-btn">Sign In</button>
-                </form>
-                <div class="toggle-auth">
-                    <a href="#" id="toggle-link">First time? Register your pre-authorized ID here</a>
-                </div>
-            </div>
-
-            <div id="student-dashboard" class="dashboard-card" style="display: none;">
-                <h2>Welcome back, <span id="student-display-name">Student</span>!</h2>
-                <p>Academic Assessment Performance Ledger</p>
-                <div class="table-wrapper">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Subject Course</th>
-                                <th>Quiz (10%)</th>
-                                <th>Mid (20%)</th>
-                                <th>Assign (20%)</th>
-                                <th>Final (50%)</th>
-                                <th>Total (100%)</th>
-                                <th>Grade</th>
-                            </tr>
-                        </thead>
-                        <tbody id="student-marks-body"></tbody>
-                    </table>
-                </div>
-                <button class="secondary-btn" onclick="logout()">Sign Out</button>
-            </div>
-
-            <div id="admin-dashboard" class="card" style="display: none;">
-                <h2>Instructor Grading Suite</h2>
-                <p>Publish weighted assessment values directly to cloud tables.</p>
-                <form id="mark-form">
-                    <div class="form-group"><label>Student ID</label><input type="text" id="target-id" required></div>
-                    <div class="form-group"><label>Course Subject</label><input type="text" id="target-subject" required></div>
-                    <div class="form-group"><label>Quiz (Max 10)</label><input type="number" id="m-quiz" step="0.01" min="0" max="10" required></div>
-                    <div class="form-group"><label>Mid Exam (Max 20)</label><input type="number" id="m-mid" step="0.01" min="0" max="20" required></div>
-                    <div class="form-group"><label>Assignment (Max 20)</label><input type="number" id="m-assign" step="0.01" min="0" max="20" required></div>
-                    <div class="form-group"><label>Final Exam (Max 50)</label><input type="number" id="m-final" step="0.01" min="0" max="50" required></div>
-                    <button type="submit" class="primary-btn">Commit Grades</button>
-                </form>
-                <button class="secondary-btn" onclick="logout()">Sign Out</button>
-            </div>
-        </div>
+  <div id="auth-card" class="card">
+    <h2 id="auth-title">Portal Access</h2>
+    <p id="auth-subtitle">Enter your institutional identification credentials.</p>
+    
+    <form id="auth-form">
+      <div class="form-group">
+        <label for="userId">Student ID / Admin ID Number:</label>
+        <input type="text" id="userId" placeholder="e.g., UGR/82533/17" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="••••••••" required>
+      </div>
+      <button type="submit" id="submit-btn">Sign In</button>
+    </form>
+    
+    <div class="toggle-container">
+      <a href="#" id="toggle-link">First time? Register your pre-authorized ID here</a>
     </div>
-    <script src="app.js"></script>
+  </div>
+
+  <div id="student-dashboard" class="card" style="display: none;">
+    <div class="dashboard-header">
+      <h2>Welcome, <span id="student-display-name">Student</span>!</h2>
+      <button onclick="logout()" class="btn-logout">Logout</button>
+    </div>
+    
+    <h3>Your Academic Performance Matrix</h3>
+    <table class="marks-table">
+      <thead>
+        <tr>
+          <th>Course Title & Code</th>
+          <th>Assessment (30%)</th>
+          <th>Mid Exam (20%)</th>
+          <th>Final Exam (50%)</th>
+          <th>Total (100%)</th>
+          <th>Grade</th>
+        </tr>
+      </thead>
+      <tbody id="student-marks-body">
+        </tbody>
+    </table>
+  </div>
+
+  <div id="admin-dashboard" class="card" style="display: none;">
+    <div class="dashboard-header">
+      <h2>👑 Central Administration Core Deck</h2>
+      <button onclick="logout()" class="btn-logout">Logout</button>
+    </div>
+
+    <div class="admin-section">
+      <h3>➕ Publish & Update Student Grades</h3>
+      <form id="mark-form">
+        <div class="form-group">
+          <label for="target-id">Target Student ID Number:</label>
+          <input type="text" id="target-id" placeholder="e.g., UGR/82533/17" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="target-subject">Select Academic Evaluation Tab:</label>
+          <select id="target-subject" required>
+            <option value="" disabled selected>-- Select Course --</option>
+            <option value="Geometric Design of Highway and Street (CEng 3201)">Geometric Design of Highway and Street (CEng 3201)</option>
+            <option value="Transport Planning and Modeling (CEng 2901)">Transport Planning and Modeling (CEng 2901)</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="m-quiz">Assessment (30%):</label>
+            <input type="number" id="m-quiz" step="0.01" min="0" max="30" placeholder="0.00" required>
+          </div>
+          <div class="form-group">
+            <label for="m-mid">Mid Exam (20%):</label>
+            <input type="number" id="m-mid" step="0.01" min="0" max="20" placeholder="0.00" required>
+          </div>
+          <div class="form-group">
+            <label for="m-final">Final Exam (50%):</label>
+            <input type="number" id="m-final" step="0.01" min="0" max="50" placeholder="0.00" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-admin-submit">Save Academic Metrics Record</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
