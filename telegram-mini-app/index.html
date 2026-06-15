@@ -681,7 +681,7 @@ if (TG) {
 /* ════════════════════════════════════════════
    CONFIG
 ════════════════════════════════════════════ */
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxf6sD-MfiacwC0qfHVouyFNNzXlE6dyTSw1Z_yoQ-tb0Ung1WEr7tpMciH14eGJCP7Bg/exec'; // ← replace with your deployed URL
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-9-KOvUiNF7Xj1yUX5QTm0zgzVGLVK-xfPYBgsW8XfOsHyq1RmYXkmRwz-ZclWXIU_Q/exec'; // ← replace with your deployed URL
 
 /* ════════════════════════════════════════════
    STATE
@@ -747,7 +747,7 @@ async function doLogin() {
   btn.textContent='Signing in…'; btn.disabled=true;
 
   // Demo mode — bypass API if URL not set
-  if (SCRIPT_URL === 'https://script.google.com/macros/s/AKfycbxf6sD-MfiacwC0qfHVouyFNNzXlE6dyTSw1Z_yoQ-tb0Ung1WEr7tpMciH14eGJCP7Bg/exec') {
+  if (SCRIPT_URL === 'https://script.google.com/macros/s/AKfycby-9-KOvUiNF7Xj1yUX5QTm0zgzVGLVK-xfPYBgsW8XfOsHyq1RmYXkmRwz-ZclWXIU_Q/exec') {
     // Accept any non-empty credentials in demo mode
     state.role   = state.loginRole;
     state.userId = id;
