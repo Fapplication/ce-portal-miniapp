@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Civil Engineering Department Academic Portal — Grades, tests, notes and more." />
+  <title>CE Department Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:     #2563EB;
+      --blue-dk:  #1E40AF;
+      --amber:    #F59E0B;
+      --amber-lt: #FBBF24;
+      --bg:       #F8FAFC;
+      --bg-dk:    #0F172A;
+      --text:     #0F172A;
+      --muted:    #64748B;
+      --white:    #FFFFFF;
+      --glass:    rgba(255,255,255,0.10);
+      --radius:   16px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dk);
+      color: var(--white);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── ANIMATED BG ─────────────────────────────────── */
+    .bg-canvas {
+      position: fixed; inset: 0; z-index: 0;
+      background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 40%, #0F172A 100%);
+      overflow: hidden;
+    }
+    .bg-canvas::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); opacity: 0.25;
+      animation: drift 18s ease-in-out infinite alternate;
+    }
+    .blob-1 { width:520px; height:520px; background:#2563EB; top:-100px; left:-120px; animation-delay:0s; }
+    .blob-2 { width:400px; height:400px; background:#7C3AED; bottom:-80px; right:-100px; animation-delay:-6s; }
+    .blob-3 { width:300px; height:300px; background:#F59E0B; top:50%; left:60%; animation-delay:-12s; }
+    @keyframes drift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(40px,30px) scale(1.08); }
+    }
+
+    /* ─── NAV ─────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 5%;
+      background: rgba(15,23,42,0.70);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .nav-brand .logo {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: linear-gradient(135deg,#2563EB,#7C3AED);
+      display: grid; place-items: center; font-size: 20px;
+    }
+    .nav-brand span { font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:18px; color:#fff; }
+    .nav-links { display: flex; gap: 8px; }
+    .nav-links a {
+      padding: 9px 20px; border-radius: 10px; font-size: 14px; font-weight: 500;
+      text-decoration: none; transition: all .2s;
+    }
+    .btn-ghost { color: rgba(255,255,255,0.75); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); color:#fff; }
+    .btn-primary {
+      background: linear-gradient(135deg,#2563EB,#1E40AF);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(37,99,235,0.35);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 24px rgba(37,99,235,0.5); }
+
+    /* ─── HERO ─────────────────────────────────────────── */
+    .hero {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 120px 5% 80px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 999px;
+      background: rgba(37,99,235,0.15);
+      border: 1px solid rgba(37,99,235,0.35);
+      font-size: 13px; font-weight: 500; color: #93C5FD;
+      margin-bottom: 28px;
+      animation: fadeUp .6s ease both;
+    }
+    .hero-badge .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #60A5FA;
+      animation: pulse-dot 2s ease infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100%{ opacity:1; transform:scale(1); }
+      50%    { opacity:.4; transform:scale(1.4); }
+    }
+    .hero h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 5rem);
+      font-weight: 700; line-height: 1.1;
+      letter-spacing: -1px;
+      animation: fadeUp .6s .1s ease both;
+    }
+    .hero h1 .accent {
+      background: linear-gradient(135deg,#60A5FA,#A78BFA,#F59E0B);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      max-width: 560px; margin: 20px auto 0;
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: rgba(255,255,255,0.60); line-height: 1.7;
+      animation: fadeUp .6s .2s ease both;
+    }
+    .hero-cta {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      justify-content: center; margin-top: 44px;
+      animation: fadeUp .6s .3s ease both;
+    }
+    .cta-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 28px; border-radius: 12px;
+      font-size: 15px; font-weight: 600; text-decoration: none;
+      transition: all .25s; cursor: pointer; border: none;
+    }
+    .cta-blue {
+      background: linear-gradient(135deg,#2563EB,#1E40AF);
+      color:#fff; box-shadow: 0 4px 20px rgba(37,99,235,0.4);
+    }
+    .cta-blue:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(37,99,235,0.5); }
+    .cta-amber {
+      background: linear-gradient(135deg,#F59E0B,#FBBF24);
+      color:#0F172A; box-shadow: 0 4px 20px rgba(245,158,11,0.35);
+    }
+    .cta-amber:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(245,158,11,0.45); }
+    .cta-glass {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.14);
+      color:#fff; backdrop-filter:blur(10px);
+    }
+    .cta-glass:hover { background: rgba(255,255,255,0.12); transform:translateY(-2px); }
+
+    /* ─── STATS BAR ────────────────────────────────────── */
+    .stats-bar {
+      position: relative; z-index: 1;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 1px;
+      margin: 0 5% 80px;
+    }
+    .stat-card {
+      flex: 1 1 180px; max-width: 260px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      border-radius: var(--radius); padding: 28px 24px;
+      text-align: center;
+      transition: background .2s, transform .2s;
+    }
+    .stat-card:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+    .stat-card:last-child  { border-radius: 0 var(--radius) var(--radius) 0; }
+    .stat-card:hover { background: rgba(37,99,235,0.10); transform:translateY(-3px); }
+    .stat-num {
+      font-family:'Space Grotesk',sans-serif;
+      font-size: 2rem; font-weight: 700; color:#fff;
+    }
+    .stat-label { font-size:13px; color:rgba(255,255,255,0.5); margin-top:4px; }
+
+    /* ─── FEATURE SECTION ─────────────────────────────── */
+    .section { position:relative; z-index:1; padding: 80px 5%; }
+    .section-label {
+      text-align:center; font-size:12px; font-weight:600;
+      letter-spacing:3px; text-transform:uppercase;
+      color: #60A5FA; margin-bottom:12px;
+    }
+    .section-title {
+      text-align:center; font-family:'Space Grotesk',sans-serif;
+      font-size:clamp(1.8rem,3.5vw,2.8rem); font-weight:700;
+      line-height:1.2; margin-bottom:48px;
+    }
+    .features-grid {
+      display:grid; gap:20px;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+    }
+    .feature-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius); padding:28px;
+      transition: all .25s;
+    }
+    .feature-card:hover {
+      background: rgba(37,99,235,0.10);
+      border-color: rgba(37,99,235,0.35);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    .feature-icon {
+      width:48px; height:48px; border-radius:12px;
+      display:grid; place-items:center; font-size:22px;
+      margin-bottom:16px;
+    }
+    .feature-card h3 { font-size:17px; font-weight:600; margin-bottom:8px; }
+    .feature-card p  { font-size:14px; color:rgba(255,255,255,0.55); line-height:1.6; }
+
+    /* ─── ROLE CARDS ──────────────────────────────────── */
+    .role-grid { display:grid; gap:24px; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); }
+    .role-card {
+      border-radius: 20px; padding:36px;
+      position:relative; overflow:hidden;
+      transition: transform .25s, box-shadow .25s;
+    }
+    .role-card:hover { transform:translateY(-5px); box-shadow:0 30px 60px rgba(0,0,0,0.4); }
+    .role-card.student {
+      background: linear-gradient(135deg,#1E3A8A,#1E40AF);
+      border: 1px solid rgba(96,165,250,0.2);
+    }
+    .role-card.instructor {
+      background: linear-gradient(135deg,#78350F,#B45309);
+      border: 1px solid rgba(251,191,36,0.2);
+    }
+    .role-card .role-icon { font-size:3rem; margin-bottom:16px; }
+    .role-card h3 { font-family:'Space Grotesk',sans-serif; font-size:1.5rem; font-weight:700; margin-bottom:10px; }
+    .role-card p  { font-size:14px; color:rgba(255,255,255,0.70); line-height:1.7; margin-bottom:24px; }
+    .role-card ul { list-style:none; margin-bottom:28px; }
+    .role-card ul li { font-size:14px; color:rgba(255,255,255,0.80); padding:4px 0; }
+    .role-card ul li::before { content:'✓ '; color:#60A5FA; font-weight:700; }
+    .role-card.instructor ul li::before { color:#FCD34D; }
+    .role-btn {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:12px 24px; border-radius:10px; font-size:15px;
+      font-weight:600; text-decoration:none; border:none; cursor:pointer;
+      transition:all .2s;
+    }
+    .role-card.student .role-btn {
+      background: rgba(255,255,255,0.15); color:#fff; backdrop-filter:blur(8px);
+    }
+    .role-card.instructor .role-btn {
+      background: rgba(255,255,255,0.15); color:#fff; backdrop-filter:blur(8px);
+    }
+    .role-btn:hover { background:rgba(255,255,255,0.25); transform:translateX(4px); }
+
+    /* ─── FOOTER ──────────────────────────────────────── */
+    footer {
+      position:relative; z-index:1;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 40px 5%; text-align:center;
+      color:rgba(255,255,255,0.35); font-size:13px;
+    }
+
+    /* ─── ANIMATIONS ──────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    .reveal { opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    /* ─── MODAL ───────────────────────────────────────── */
+    .modal-overlay {
+      position:fixed; inset:0; z-index:200;
+      background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
+      display:grid; place-items:center; padding:20px;
+      opacity:0; pointer-events:none; transition:opacity .25s;
+    }
+    .modal-overlay.open { opacity:1; pointer-events:all; }
+    .modal {
+      background:#1E293B; border:1px solid rgba(255,255,255,0.10);
+      border-radius:20px; padding:36px; width:100%; max-width:420px;
+      transform:translateY(20px) scale(.97); transition:transform .25s;
+    }
+    .modal-overlay.open .modal { transform:translateY(0) scale(1); }
+    .modal h2 { font-family:'Space Grotesk',sans-serif; font-size:1.5rem; font-weight:700; margin-bottom:6px; }
+    .modal p  { font-size:14px; color:rgba(255,255,255,0.55); margin-bottom:28px; }
+    .form-group { margin-bottom:18px; }
+    .form-group label { display:block; font-size:13px; font-weight:500; color:rgba(255,255,255,0.70); margin-bottom:6px; }
+    .form-group .input-wrap { position:relative; }
+    .form-group input {
+      width:100%; padding:12px 16px; border-radius:10px;
+      background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+      color:#fff; font-size:15px; font-family:'Inter',sans-serif;
+      outline:none; transition:border .2s, box-shadow .2s;
+    }
+    .form-group input:focus {
+      border-color:#2563EB; box-shadow:0 0 0 3px rgba(37,99,235,0.2);
+    }
+    .toggle-pw {
+      position:absolute; right:12px; top:50%; transform:translateY(-50%);
+      background:none; border:none; color:rgba(255,255,255,0.4);
+      cursor:pointer; font-size:16px; padding:4px;
+    }
+    .form-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+    .remember { display:flex; align-items:center; gap:8px; font-size:13px; color:rgba(255,255,255,0.60); cursor:pointer; }
+    .remember input[type=checkbox] { accent-color:#2563EB; }
+    .forgot { font-size:13px; color:#60A5FA; text-decoration:none; }
+    .forgot:hover { text-decoration:underline; }
+    .submit-btn {
+      width:100%; padding:13px; border-radius:10px; border:none;
+      background:linear-gradient(135deg,#2563EB,#1E40AF); color:#fff;
+      font-size:15px; font-weight:600; cursor:pointer;
+      transition:all .2s; font-family:'Inter',sans-serif;
+    }
+    .submit-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(37,99,235,0.4); }
+    .modal-close {
+      position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.08);
+      border:none; color:#fff; width:32px; height:32px; border-radius:8px;
+      cursor:pointer; font-size:18px; display:grid; place-items:center;
+    }
+    .modal-close:hover { background:rgba(255,255,255,0.14); }
+    .modal-wrapper { position:relative; }
+    .error-msg { font-size:13px; color:#F87171; margin-top:10px; display:none; }
+
+    /* ─── RESPONSIVE ──────────────────────────────────── */
+    @media(max-width:640px) {
+      .nav-links .btn-ghost { display:none; }
+      .stat-card:first-child, .stat-card:last-child { border-radius:var(--radius); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Animated background -->
+<div class="bg-canvas">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<!-- Nav -->
+<nav>
+  <a class="nav-brand" href="#">
+    <div class="logo">🏛️</div>
+    <span>CE Portal</span>
+  </a>
+  <div class="nav-links">
+    <a href="#features" class="nav-links btn-ghost">Features</a>
+    <a href="#" class="cta-btn cta-glass" style="padding:9px 18px;font-size:14px;" onclick="openModal('student')">Student Login</a>
+    <a href="#" class="cta-btn cta-blue" style="padding:9px 18px;font-size:14px;" onclick="openModal('instructor')">Instructor Login</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    Department of Civil Engineering · Addis Ababa Institute of Technology
+  </div>
+  <h1>Your <span class="accent">Academic Portal</span></h1>
+  <p class="hero-sub">Access grades, online tests, lecture notes, complaints and instructor communication — all in one place, in real time.</p>
+  <div class="hero-cta">
+    <a href="https://t.me/" target="_blank" class="cta-btn cta-glass">✈️ Join Telegram Bot</a>
+    <button class="cta-btn cta-glass" onclick="openModal('student')">🎓 Student Login</button>
+    <button class="cta-btn cta-blue" onclick="openModal('instructor')">👨‍🏫 Instructor Login</button>
+  </div>
+</section>
+
+<!-- Stats -->
+<div class="stats-bar reveal">
+  <div class="stat-card">
+    <div class="stat-num" data-count="1200">0</div>
+    <div class="stat-label">Enrolled Students</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" data-count="48">0</div>
+    <div class="stat-label">Active Courses</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" data-count="24">0</div>
+    <div class="stat-label">Instructors</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" data-count="99">0</div>
+    <div class="stat-label">% Uptime</div>
+  </div>
+</div>
+
+<!-- Features -->
+<section class="section" id="features">
+  <div class="section-label">What's Inside</div>
+  <h2 class="section-title reveal">Everything you need, <br/>nothing you don't</h2>
+  <div class="features-grid">
+    <div class="feature-card reveal">
+      <div class="feature-icon" style="background:rgba(37,99,235,0.15);">📊</div>
+      <h3>Live Grade Tracking</h3>
+      <p>Weighted scores calculated automatically from Google Sheets. Students see results the moment marks are entered.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon" style="background:rgba(245,158,11,0.15);">📝</div>
+      <h3>Online Tests</h3>
+      <p>Instructors create timed MCQ tests. Students attempt them on any device. Results are instant.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon" style="background:rgba(124,58,237,0.15);">📚</div>
+      <h3>Lecture Notes</h3>
+      <p>Upload PDFs, slides and videos directly. Students download from the portal or get links via Telegram.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon" style="background:rgba(16,185,129,0.15);">🤖</div>
+      <h3>AI Academic Assistant</h3>
+      <p>Built-in chat assistant answers course questions, explains grades and helps navigate the portal.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon" style="background:rgba(239,68,68,0.15);">📨</div>
+      <h3>Complaint System</h3>
+      <p>Students raise mark disputes. Instructors review and respond. Full audit trail kept automatically.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon" style="background:rgba(37,99,235,0.15);">✈️</div>
+      <h3>Telegram Notifications</h3>
+      <p>Grade publications, new notes and announcements push instantly to students' Telegram.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Role Cards -->
+<section class="section">
+  <div class="section-label">Access</div>
+  <h2 class="section-title reveal">Choose your role</h2>
+  <div class="role-grid">
+    <!-- Student -->
+    <div class="role-card student reveal">
+      <div class="role-icon">🎓</div>
+      <h3>Student</h3>
+      <p>Log in with your Student ID to access your grades, GPA, tests, lecture notes and complaint system.</p>
+      <ul>
+        <li>View weighted course grades</li>
+        <li>Semester & cumulative GPA</li>
+        <li>Online test attempts</li>
+        <li>Download lecture notes</li>
+        <li>Raise and track complaints</li>
+      </ul>
+      <button class="role-btn" onclick="openModal('student')">Student Login →</button>
+    </div>
+    <!-- Instructor -->
+    <div class="role-card instructor reveal">
+      <div class="role-icon">👨‍🏫</div>
+      <h3>Instructor</h3>
+      <p>Manage courses, define assessment structures, publish grades and communicate with students — all from one dashboard.</p>
+      <ul>
+        <li>Create & configure courses</li>
+        <li>Build unlimited assessment types</li>
+        <li>Auto-generated grade sheets</li>
+        <li>Upload tests and lecture notes</li>
+        <li>Analytics & grade distribution</li>
+      </ul>
+      <button class="role-btn" onclick="openModal('instructor')">Instructor Login →</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Department of Civil Engineering · Academic Portal · Built on Google Sheets + Apps Script</p>
+</footer>
+
+<!-- Student Login Modal -->
+<div class="modal-overlay" id="modal-student">
+  <div class="modal-wrapper">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('student')">✕</button>
+      <h2>Student Login</h2>
+      <p>Enter your university credentials to continue.</p>
+      <div class="form-group">
+        <label>Student ID</label>
+        <input type="text" id="s-id" placeholder="e.g. UGR/82533/16" autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <input type="password" id="s-pw" placeholder="••••••••" autocomplete="current-password" />
+          <button class="toggle-pw" onclick="togglePw('s-pw',this)" tabindex="-1">👁</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="remember"><input type="checkbox" /> Remember me</label>
+        <a href="#" class="forgot">Forgot password?</a>
+      </div>
+      <button class="submit-btn" onclick="loginStudent()">Sign In</button>
+      <p class="error-msg" id="s-err">Invalid credentials. Please try again.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Instructor Login Modal -->
+<div class="modal-overlay" id="modal-instructor">
+  <div class="modal-wrapper">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('instructor')">✕</button>
+      <h2>Instructor Login</h2>
+      <p>Enter your faculty credentials to continue.</p>
+      <div class="form-group">
+        <label>Instructor ID</label>
+        <input type="text" id="i-id" placeholder="e.g. INS/001/24" autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <div class="input-wrap">
+          <input type="password" id="i-pw" placeholder="••••••••" autocomplete="current-password" />
+          <button class="toggle-pw" onclick="togglePw('i-pw',this)" tabindex="-1">👁</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="remember"><input type="checkbox" /> Remember me</label>
+        <a href="#" class="forgot">Forgot password?</a>
+      </div>
+      <button class="submit-btn" onclick="loginInstructor()">Sign In</button>
+      <p class="error-msg" id="i-err">Invalid credentials. Please try again.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── Modal ─────────────────────────────────────────── */
+  function openModal(role) {
+    document.getElementById('modal-' + role).classList.add('open');
+  }
+  function closeModal(role) {
+    document.getElementById('modal-' + role).classList.remove('open');
+  }
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if(e.target === el) el.classList.remove('open'); });
+  });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+  });
+
+  /* ── Password toggle ───────────────────────────────── */
+  function togglePw(id, btn) {
+    const inp = document.getElementById(id);
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    btn.textContent = show ? '🙈' : '👁';
+  }
+
+  /* ── Auth (demo — real auth is via Apps Script) ──── */
+  const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE'; // replace after deployment
+
+  async function loginStudent() {
+    const id = document.getElementById('s-id').value.trim();
+    const pw = document.getElementById('s-pw').value;
+    const err = document.getElementById('s-err');
+    if (!id || !pw) { showErr(err, 'Please fill in all fields.'); return; }
+
+    // Demo shortcut — remove when Apps Script is deployed
+    if (id && pw) {
+      sessionStorage.setItem('portal_role', 'student');
+      sessionStorage.setItem('portal_user', id);
+      window.location.href = 'student-dashboard.html';
+      return;
+    }
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=login&role=student&id=${encodeURIComponent(id)}&pw=${encodeURIComponent(pw)}`);
+      const data = await res.json();
+      if (data.success) {
+        sessionStorage.setItem('portal_role','student');
+        sessionStorage.setItem('portal_token', data.token);
+        sessionStorage.setItem('portal_user', data.name);
+        window.location.href='student-dashboard.html';
+      } else { showErr(err, data.message || 'Login failed.'); }
+    } catch { showErr(err, 'Connection error. Try again.'); }
+  }
+
+  async function loginInstructor() {
+    const id = document.getElementById('i-id').value.trim();
+    const pw = document.getElementById('i-pw').value;
+    const err = document.getElementById('i-err');
+    if (!id || !pw) { showErr(err, 'Please fill in all fields.'); return; }
+
+    // Demo shortcut
+    if (id && pw) {
+      sessionStorage.setItem('portal_role', 'instructor');
+      sessionStorage.setItem('portal_user', id);
+      window.location.href = 'instructor-dashboard.html';
+      return;
+    }
+    try {
+      const res = await fetch(`${SCRIPT_URL}?action=login&role=instructor&id=${encodeURIComponent(id)}&pw=${encodeURIComponent(pw)}`);
+      const data = await res.json();
+      if (data.success) {
+        sessionStorage.setItem('portal_role','instructor');
+        sessionStorage.setItem('portal_token', data.token);
+        sessionStorage.setItem('portal_user', data.name);
+        window.location.href='instructor-dashboard.html';
+      } else { showErr(err, data.message || 'Login failed.'); }
+    } catch { showErr(err, 'Connection error. Try again.'); }
+  }
+
+  function showErr(el, msg) {
+    el.textContent = msg; el.style.display = 'block';
+    setTimeout(() => el.style.display = 'none', 4000);
+  }
+
+  /* ── Counter animation ─────────────────────────────── */
+  function animateCounter(el) {
+    const target = parseInt(el.dataset.count);
+    const duration = 1600;
+    const step = target / (duration / 16);
+    let current = 0;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = Math.round(current) + (el.dataset.count === '99' ? '%' : '+');
+      if (current >= target) clearInterval(timer);
+    }, 16);
+  }
+
+  /* ── Intersection Observer ─────────────────────────── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        const counter = entry.target.querySelector('[data-count]');
+        if (counter && !counter.dataset.animated) {
+          counter.dataset.animated = '1';
+          animateCounter(counter);
+        }
+        entry.target.querySelectorAll('[data-count]').forEach(c => {
+          if (!c.dataset.animated) { c.dataset.animated='1'; animateCounter(c); }
+        });
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

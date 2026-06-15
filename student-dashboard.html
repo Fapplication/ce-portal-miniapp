@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Portal · CE Department</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ════════════════════════════════════════
+       DESIGN TOKENS
+    ════════════════════════════════════════ */
+    :root {
+      --blue:       #2563EB;
+      --blue-dk:    #1E40AF;
+      --blue-lt:    #DBEAFE;
+      --amber:      #F59E0B;
+      --amber-lt:   #FEF3C7;
+      --green:      #10B981;
+      --red:        #EF4444;
+      --purple:     #7C3AED;
+
+      --sidebar-w:  260px;
+      --sidebar-bg: #0F172A;
+      --topbar-h:   64px;
+      --radius:     14px;
+      --radius-sm:  8px;
+      --transition: .22s ease;
+    }
+    [data-theme="dark"] {
+      --bg:         #0F172A;
+      --bg2:        #1E293B;
+      --bg3:        #334155;
+      --border:     rgba(255,255,255,0.08);
+      --text:       #F1F5F9;
+      --text2:      #94A3B8;
+      --card:       rgba(30,41,59,0.80);
+      --glass:      rgba(255,255,255,0.05);
+    }
+    [data-theme="light"] {
+      --bg:         #F8FAFC;
+      --bg2:        #FFFFFF;
+      --bg3:        #E2E8F0;
+      --border:     rgba(0,0,0,0.08);
+      --text:       #0F172A;
+      --text2:      #64748B;
+      --card:       #FFFFFF;
+      --glass:      rgba(0,0,0,0.03);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    /* ════════════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════════════ */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-height: 100vh;
+      background: var(--sidebar-bg);
+      display: flex; flex-direction: column;
+      position: fixed; left: 0; top: 0; bottom: 0;
+      z-index: 50;
+      transition: transform var(--transition), width var(--transition);
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+    .sidebar.collapsed { transform: translateX(calc(-1 * var(--sidebar-w))); }
+
+    .sidebar-header {
+      padding: 20px 20px 0;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .sidebar-brand { display: flex; align-items: center; gap: 10px; }
+    .sidebar-brand .logo {
+      width: 36px; height: 36px; border-radius: 9px;
+      background: linear-gradient(135deg,#2563EB,#7C3AED);
+      display: grid; place-items: center; font-size: 16px; flex-shrink: 0;
+    }
+    .sidebar-brand span {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700; font-size: 15px; color: #fff;
+    }
+
+    /* Profile card */
+    .profile-card {
+      margin: 20px 12px;
+      padding: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+    }
+    .profile-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg,#2563EB,#7C3AED);
+      display: grid; place-items: center; font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .profile-name { font-size: 13px; font-weight: 600; color: #fff; }
+    .profile-id   { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+    .profile-badge {
+      display: inline-block; margin-top: 8px;
+      padding: 2px 10px; border-radius: 999px;
+      background: rgba(37,99,235,0.20);
+      border: 1px solid rgba(37,99,235,0.35);
+      font-size: 11px; color: #93C5FD; font-weight: 500;
+    }
+
+    /* Nav items */
+    .sidebar-nav { flex: 1; padding: 8px 12px; overflow-y: auto; }
+    .nav-section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase; color: rgba(255,255,255,0.25);
+      padding: 16px 8px 6px;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px;
+      cursor: pointer; text-decoration: none;
+      color: rgba(255,255,255,0.55);
+      font-size: 14px; font-weight: 500;
+      transition: all var(--transition);
+      position: relative; margin-bottom: 2px;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+    .nav-item.active {
+      background: linear-gradient(135deg,rgba(37,99,235,0.25),rgba(124,58,237,0.15));
+      color: #fff;
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.3);
+    }
+    .nav-item.active::before {
+      content: ''; position: absolute; left: 0; top: 6px; bottom: 6px;
+      width: 3px; border-radius: 999px;
+      background: linear-gradient(#2563EB,#7C3AED);
+    }
+    .nav-item .icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
+    .nav-badge {
+      margin-left: auto; background: var(--red);
+      color: #fff; font-size: 10px; font-weight: 700;
+      padding: 1px 7px; border-radius: 999px;
+    }
+
+    /* Sidebar footer */
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.05); }
+    .sidebar-footer .nav-item { color: rgba(255,255,255,0.40); }
+
+    /* Overlay for mobile */
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0; z-index: 40;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    }
+    .sidebar-overlay.show { display: block; }
+
+    /* ════════════════════════════════════════
+       MAIN CONTENT
+    ════════════════════════════════════════ */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1; display: flex; flex-direction: column;
+      min-height: 100vh;
+      transition: margin-left var(--transition);
+    }
+    .main.expanded { margin-left: 0; }
+
+    /* Topbar */
+    .topbar {
+      height: var(--topbar-h);
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 24px; gap: 16px;
+      position: sticky; top: 0; z-index: 30;
+      backdrop-filter: blur(12px);
+    }
+    .topbar-toggle {
+      background: none; border: none; color: var(--text2);
+      font-size: 20px; cursor: pointer; padding: 6px;
+      border-radius: 8px; transition: background var(--transition);
+    }
+    .topbar-toggle:hover { background: var(--glass); }
+    .topbar-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700; font-size: 18px;
+    }
+    .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .theme-btn, .notif-btn {
+      width: 36px; height: 36px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--bg2);
+      cursor: pointer; display: grid; place-items: center;
+      font-size: 16px; color: var(--text2); transition: all var(--transition);
+      position: relative;
+    }
+    .theme-btn:hover, .notif-btn:hover { background: var(--bg3); color: var(--text); }
+    .notif-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--red); border: 2px solid var(--bg2);
+    }
+
+    /* Page content */
+    .page-content { padding: 28px 24px; flex: 1; }
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ════════════════════════════════════════
+       CARDS & GRID
+    ════════════════════════════════════════ */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px;
+      position: relative; overflow: hidden;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.15); }
+    .stat-card::after {
+      content: ''; position: absolute;
+      top: 0; right: 0; width: 80px; height: 80px;
+      border-radius: 50%; opacity: 0.08;
+      transform: translate(20px,-20px);
+    }
+    .stat-card.blue::after  { background: var(--blue); }
+    .stat-card.amber::after { background: var(--amber); }
+    .stat-card.green::after { background: var(--green); }
+    .stat-card.red::after   { background: var(--red); }
+    .stat-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: grid; place-items: center; font-size: 18px;
+      margin-bottom: 12px;
+    }
+    .stat-icon.blue   { background: rgba(37,99,235,0.12); }
+    .stat-icon.amber  { background: rgba(245,158,11,0.12); }
+    .stat-icon.green  { background: rgba(16,185,129,0.12); }
+    .stat-icon.red    { background: rgba(239,68,68,0.12); }
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.9rem; font-weight: 700; line-height: 1;
+    }
+    .stat-label { font-size: 13px; color: var(--text2); margin-top: 4px; }
+    .stat-delta { font-size: 12px; margin-top: 6px; }
+    .stat-delta.up   { color: var(--green); }
+    .stat-delta.down { color: var(--red); }
+
+    /* Content grid */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+    }
+    @media(max-width:1024px){ .content-grid { grid-template-columns: 1fr; } }
+
+    /* Panel card */
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden; margin-bottom: 20px;
+    }
+    .panel-header {
+      padding: 18px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .panel-title { font-size: 15px; font-weight: 600; }
+    .panel-body { padding: 20px; }
+    .panel-link {
+      font-size: 13px; color: var(--blue); text-decoration: none; font-weight: 500;
+    }
+    .panel-link:hover { text-decoration: underline; }
+
+    /* ════════════════════════════════════════
+       GRADE TABLE
+    ════════════════════════════════════════ */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    thead th {
+      text-align: left; padding: 12px 14px;
+      color: var(--text2); font-size: 12px; font-weight: 600;
+      letter-spacing: .5px; text-transform: uppercase;
+      border-bottom: 1px solid var(--border); white-space: nowrap;
+    }
+    tbody td { padding: 13px 14px; border-bottom: 1px solid var(--border); }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--glass); }
+
+    .grade-badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 999px; font-size: 12px; font-weight: 700;
+    }
+    .grade-A  { background:rgba(16,185,129,0.15); color:#10B981; }
+    .grade-B  { background:rgba(37,99,235,0.15);  color:#3B82F6; }
+    .grade-C  { background:rgba(245,158,11,0.15); color:#F59E0B; }
+    .grade-D  { background:rgba(239,68,68,0.12);  color:#EF4444; }
+    .grade-F  { background:rgba(239,68,68,0.20);  color:#EF4444; }
+
+    /* Progress bar */
+    .progress-wrap { margin-bottom: 16px; }
+    .progress-label {
+      display: flex; justify-content: space-between;
+      font-size: 13px; margin-bottom: 6px;
+      color: var(--text2);
+    }
+    .progress-label span:last-child { color: var(--text); font-weight: 600; }
+    .progress-bar {
+      height: 8px; background: var(--bg3);
+      border-radius: 999px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg,#2563EB,#7C3AED);
+      transition: width 1s ease;
+    }
+
+    /* ════════════════════════════════════════
+       ANNOUNCEMENT / NOTIFICATION ITEMS
+    ════════════════════════════════════════ */
+    .notif-item {
+      display: flex; gap: 12px; padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .notif-item:last-child { border-bottom: none; }
+    .notif-dot-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: grid; place-items: center; font-size: 16px; flex-shrink: 0;
+    }
+    .notif-item .meta { font-size: 12px; color: var(--text2); margin-top: 3px; }
+    .notif-item .title { font-size: 14px; font-weight: 500; }
+    .notif-item.unread .title::after {
+      content: '•'; color: var(--blue); margin-left: 6px; font-size: 16px;
+    }
+
+    /* ════════════════════════════════════════
+       COURSE DETAIL
+    ════════════════════════════════════════ */
+    .course-cards {
+      display: grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap:16px;
+    }
+    .course-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px;
+      cursor: pointer; transition: all var(--transition);
+    }
+    .course-card:hover {
+      border-color: var(--blue); transform: translateY(-3px);
+      box-shadow: 0 12px 28px rgba(37,99,235,0.12);
+    }
+    .course-card .code {
+      font-size: 11px; font-weight: 700; color: var(--blue);
+      letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;
+    }
+    .course-card .name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .course-card .info { font-size: 13px; color: var(--text2); margin-bottom: 14px; }
+    .course-card .grade-row {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    /* ════════════════════════════════════════
+       ASSESSMENT BREAKDOWN (per course)
+    ════════════════════════════════════════ */
+    .assessment-row {
+      display: grid; grid-template-columns: 1fr 80px 80px 80px 80px;
+      gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--border);
+      align-items: center; font-size: 14px;
+    }
+    .assessment-row:last-child { border-bottom: none; }
+    .assessment-row.header { font-size: 12px; color: var(--text2); font-weight: 600; text-transform: uppercase; }
+    .assessment-row span:not(:first-child) { text-align: center; }
+
+    /* ════════════════════════════════════════
+       MINI CHART (pure CSS bar chart)
+    ════════════════════════════════════════ */
+    .chart-bars {
+      display: flex; align-items: flex-end; gap: 8px;
+      height: 120px; padding: 0 4px;
+    }
+    .chart-bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+    .chart-bar-outer { width:100%; background:var(--bg3); border-radius:6px 6px 0 0; flex:1; display:flex; align-items:flex-end; overflow:hidden; }
+    .chart-bar-inner { width:100%; border-radius:6px 6px 0 0; background:linear-gradient(180deg,#2563EB,#7C3AED); transition:height 1s ease; }
+    .chart-label { font-size:10px; color:var(--text2); white-space:nowrap; }
+
+    /* ════════════════════════════════════════
+       GPA RING
+    ════════════════════════════════════════ */
+    .gpa-ring-wrap { display:flex; flex-direction:column; align-items:center; padding:20px 0; }
+    .gpa-ring {
+      width:140px; height:140px; position:relative;
+      display:grid; place-items:center;
+    }
+    .gpa-ring svg { position:absolute; inset:0; transform:rotate(-90deg); }
+    .gpa-ring .gpa-num {
+      font-family:'Space Grotesk',sans-serif; font-size:2rem; font-weight:700;
+      z-index:1;
+    }
+    .gpa-ring .gpa-label { font-size:12px; color:var(--text2); }
+
+    /* ════════════════════════════════════════
+       COMPLAINT FORM
+    ════════════════════════════════════════ */
+    .form-group { margin-bottom:16px; }
+    .form-group label { display:block; font-size:13px; font-weight:500; color:var(--text2); margin-bottom:6px; }
+    .form-group select, .form-group input, .form-group textarea {
+      width:100%; padding:10px 14px; border-radius:var(--radius-sm);
+      background:var(--bg3); border:1px solid var(--border);
+      color:var(--text); font-size:14px; font-family:'Inter',sans-serif;
+      outline:none; transition:border .2s;
+    }
+    .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--blue);
+    }
+    .form-group textarea { resize:vertical; min-height:100px; }
+    .btn {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 20px; border-radius:var(--radius-sm);
+      font-size:14px; font-weight:600; border:none; cursor:pointer;
+      font-family:'Inter',sans-serif; transition:all var(--transition);
+    }
+    .btn-primary { background:linear-gradient(135deg,#2563EB,#1E40AF); color:#fff; }
+    .btn-primary:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(37,99,235,0.4); }
+    .btn-outline { background:transparent; border:1px solid var(--border); color:var(--text); }
+    .btn-outline:hover { background:var(--bg3); }
+
+    /* ════════════════════════════════════════
+       AI CHAT
+    ════════════════════════════════════════ */
+    .chat-window {
+      height:380px; overflow-y:auto; padding:16px;
+      background:var(--bg); border-radius:var(--radius-sm);
+      border:1px solid var(--border); margin-bottom:12px;
+      display:flex; flex-direction:column; gap:12px;
+    }
+    .chat-msg { display:flex; gap:10px; max-width:85%; }
+    .chat-msg.user { margin-left:auto; flex-direction:row-reverse; }
+    .chat-avatar {
+      width:32px; height:32px; border-radius:50%; flex-shrink:0;
+      display:grid; place-items:center; font-size:14px;
+      background:linear-gradient(135deg,#2563EB,#7C3AED);
+    }
+    .chat-msg.user .chat-avatar { background:linear-gradient(135deg,#F59E0B,#FBBF24); }
+    .chat-bubble {
+      padding:10px 14px; border-radius:12px; font-size:14px; line-height:1.6;
+      background:var(--bg2); border:1px solid var(--border);
+    }
+    .chat-msg.user .chat-bubble { background:var(--blue); color:#fff; border-color:var(--blue); }
+    .chat-input-row { display:flex; gap:8px; }
+    .chat-input-row input {
+      flex:1; padding:10px 14px; border-radius:var(--radius-sm);
+      background:var(--bg3); border:1px solid var(--border);
+      color:var(--text); font-size:14px; font-family:'Inter',sans-serif; outline:none;
+    }
+    .chat-input-row input:focus { border-color:var(--blue); }
+    .chat-send {
+      padding:10px 16px; background:var(--blue); color:#fff;
+      border:none; border-radius:var(--radius-sm); cursor:pointer; font-size:16px;
+    }
+
+    /* ════════════════════════════════════════
+       SKELETON LOADER
+    ════════════════════════════════════════ */
+    .skeleton {
+      background:linear-gradient(90deg,var(--bg3) 25%,var(--bg2) 50%,var(--bg3) 75%);
+      background-size:200% 100%;
+      animation:shimmer 1.5s infinite;
+      border-radius:var(--radius-sm);
+    }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════ */
+    @media(max-width:768px) {
+      .sidebar { transform: translateX(calc(-1 * var(--sidebar-w))); }
+      .sidebar.mobile-open { transform: translateX(0); }
+      .main { margin-left: 0 !important; }
+      .page-content { padding:16px; }
+      .stats-grid { grid-template-columns: repeat(2,1fr); }
+      .assessment-row { grid-template-columns: 1fr 60px 60px 60px 60px; font-size:12px; }
+    }
+    @media(max-width:480px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .assessment-row { grid-template-columns: 1fr 50px 50px; }
+      .assessment-row span:nth-child(3), .assessment-row span:nth-child(4) { display:none; }
+    }
+
+    /* toast */
+    .toast {
+      position:fixed; bottom:24px; right:24px; z-index:999;
+      padding:12px 20px; border-radius:var(--radius-sm);
+      background:#1E293B; border:1px solid rgba(255,255,255,0.10);
+      color:#fff; font-size:14px; font-weight:500;
+      box-shadow:0 8px 24px rgba(0,0,0,0.3);
+      transform:translateY(80px); opacity:0;
+      transition:all .3s ease;
+    }
+    .toast.show { transform:translateY(0); opacity:1; }
+  </style>
+</head>
+<body>
+
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-brand">
+      <div class="logo">🏛️</div>
+      <span>CE Portal</span>
+    </div>
+  </div>
+
+  <div class="profile-card">
+    <div class="profile-avatar">🎓</div>
+    <div class="profile-name" id="sb-name">Loading…</div>
+    <div class="profile-id"  id="sb-id">UGR/—/—</div>
+    <div class="profile-badge">Student</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <a class="nav-item active" onclick="showPage('dashboard',this)">
+      <span class="icon">🏠</span> Dashboard
+    </a>
+    <a class="nav-item" onclick="showPage('marks',this)">
+      <span class="icon">📊</span> My Marks
+    </a>
+    <a class="nav-item" onclick="showPage('tests',this)">
+      <span class="icon">📝</span> Online Tests
+    </a>
+    <a class="nav-item" onclick="showPage('notes',this)">
+      <span class="icon">📚</span> Lecture Notes
+    </a>
+    <a class="nav-item" onclick="showPage('ai',this)">
+      <span class="icon">🤖</span> AI Assistant
+    </a>
+
+    <div class="nav-section-label">Communication</div>
+    <a class="nav-item" onclick="showPage('notifications',this)">
+      <span class="icon">🔔</span> Notifications
+      <span class="nav-badge" id="notif-count">3</span>
+    </a>
+    <a class="nav-item" onclick="showPage('complaints',this)">
+      <span class="icon">📨</span> Complaints
+    </a>
+
+    <div class="nav-section-label">More</div>
+    <a class="nav-item" onclick="showPage('calendar',this)">
+      <span class="icon">📅</span> Academic Calendar
+    </a>
+    <a class="nav-item" onclick="showPage('settings',this)">
+      <span class="icon">⚙️</span> Settings
+    </a>
+    <a class="nav-item" href="https://t.me/" target="_blank">
+      <span class="icon">✈️</span> Telegram Bot
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a class="nav-item" onclick="logout()">
+      <span class="icon">🚪</span> Logout
+    </a>
+  </div>
+</aside>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<div class="main" id="main">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <button class="topbar-toggle" onclick="toggleSidebar()">☰</button>
+    <span class="topbar-title" id="page-title">Dashboard</span>
+    <div class="topbar-right">
+      <button class="notif-btn" onclick="showPage('notifications',null)">
+        🔔 <span class="notif-dot"></span>
+      </button>
+      <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    </div>
+  </header>
+
+  <div class="page-content">
+
+    <!-- ══════════ PAGE: DASHBOARD ══════════ -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card blue">
+          <div class="stat-icon blue">📈</div>
+          <div class="stat-value" id="gpa-val">—</div>
+          <div class="stat-label">Cumulative GPA</div>
+          <div class="stat-delta up" id="gpa-delta">↑ 0.1 from last semester</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-icon amber">📚</div>
+          <div class="stat-value" id="courses-val">—</div>
+          <div class="stat-label">Active Courses</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon green">🎯</div>
+          <div class="stat-value" id="avg-val">—</div>
+          <div class="stat-label">Average Score</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon red">📨</div>
+          <div class="stat-value" id="complaint-val">—</div>
+          <div class="stat-label">Open Complaints</div>
+        </div>
+      </div>
+
+      <div class="content-grid">
+        <!-- Left -->
+        <div>
+          <!-- Recent Grades -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Recent Grades</span>
+              <a class="panel-link" onclick="showPage('marks',null)">View all →</a>
+            </div>
+            <div class="panel-body">
+              <div class="table-wrap">
+                <table id="recent-grades-table">
+                  <thead>
+                    <tr>
+                      <th>Course</th>
+                      <th>Assessment</th>
+                      <th>Score</th>
+                      <th>Weight</th>
+                      <th>Grade</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recent-grades-body">
+                    <tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text2)">Loading grades…</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress by course -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Course Progress</span>
+            </div>
+            <div class="panel-body" id="course-progress-wrap">
+              <p style="color:var(--text2);font-size:14px">Loading…</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div>
+          <!-- GPA Ring -->
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">GPA Overview</span></div>
+            <div class="panel-body">
+              <div class="gpa-ring-wrap">
+                <div class="gpa-ring">
+                  <svg viewBox="0 0 140 140" width="140" height="140">
+                    <circle cx="70" cy="70" r="58" fill="none" stroke="var(--bg3)" stroke-width="12"/>
+                    <circle cx="70" cy="70" r="58" fill="none" stroke="url(#gpa-grad)"
+                      stroke-width="12" stroke-linecap="round"
+                      stroke-dasharray="364.4"
+                      stroke-dashoffset="364.4"
+                      id="gpa-circle"
+                      style="transition:stroke-dashoffset 1.2s ease"/>
+                    <defs>
+                      <linearGradient id="gpa-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%"   stop-color="#2563EB"/>
+                        <stop offset="100%" stop-color="#7C3AED"/>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <div>
+                    <div class="gpa-num" id="gpa-ring-val">—</div>
+                    <div class="gpa-label">/ 4.0</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:24px;margin-top:16px;font-size:13px;">
+                  <div style="text-align:center">
+                    <div style="font-weight:700;font-size:1.1rem" id="sgpa-val">—</div>
+                    <div style="color:var(--text2)">Semester GPA</div>
+                  </div>
+                  <div style="text-align:center">
+                    <div style="font-weight:700;font-size:1.1rem" id="credits-val">—</div>
+                    <div style="color:var(--text2)">Credit Hours</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Announcements -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Announcements</span>
+              <a class="panel-link" onclick="showPage('notifications',null)">All →</a>
+            </div>
+            <div class="panel-body" id="announcements-wrap">
+              <p style="color:var(--text2);font-size:14px">Loading…</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PAGE: MY MARKS ══════════ -->
+    <div class="page" id="page-marks">
+      <div class="course-cards" id="marks-course-cards">
+        <!-- Populated by JS -->
+      </div>
+      <!-- Assessment detail panel (hidden until course clicked) -->
+      <div class="panel" id="assessment-detail" style="display:none;margin-top:20px">
+        <div class="panel-header">
+          <span class="panel-title" id="detail-course-name">Course Breakdown</span>
+          <button class="btn btn-outline" style="font-size:12px;padding:6px 12px" onclick="document.getElementById('assessment-detail').style.display='none'">✕ Close</button>
+        </div>
+        <div class="panel-body">
+          <div id="assessment-detail-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PAGE: ONLINE TESTS ══════════ -->
+    <div class="page" id="page-tests">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Available Tests</span></div>
+        <div class="panel-body">
+          <div id="tests-list">
+            <p style="color:var(--text2);font-size:14px">Loading tests…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PAGE: LECTURE NOTES ══════════ -->
+    <div class="page" id="page-notes">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Lecture Notes & Resources</span></div>
+        <div class="panel-body">
+          <div id="notes-list">
+            <p style="color:var(--text2);font-size:14px">Loading resources…</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PAGE: AI ASSISTANT ══════════ -->
+    <div class="page" id="page-ai">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">🤖 AI Academic Assistant</span>
+          <span style="font-size:12px;color:var(--text2)">Powered by Claude</span>
+        </div>
+        <div class="panel-body">
+          <div class="chat-window" id="chat-window">
+            <div class="chat-msg">
+              <div class="chat-avatar">🤖</div>
+              <div class="chat-bubble">Hi! I'm your academic assistant. Ask me about your grades, courses, GPA calculation, or anything about the CE department.</div>
+            </div>
+          </div>
+          <div class="chat-input-row">
+            <input type="text" id="chat-input" placeholder="Ask about your grades, GPA, courses…" onkeydown="if(event.key==='Enter')sendChat()" />
+            <button class="chat-send" onclick="sendChat()">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PAGE: NOTIFICATIONS ══════════ -->
+    <div class="page" id="page-notifications">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Notifications</span>
+          <button class="btn btn-outline" style="font-size:12px;padding:6px 12px" onclick="markAllRead()">Mark all read</button>
+        </div>
+        <div class="panel-body" id="notifications-body">
+          <p style="color:var(--text2);font-size:14px">Loading…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PAGE: COMPLAINTS ══════════ -->
+    <div class="page" id="page-complaints">
+      <div class="content-grid">
+        <div>
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">Submit a Complaint</span></div>
+            <div class="panel-body">
+              <div class="form-group">
+                <label>Course</label>
+                <select id="complaint-course">
+                  <option value="">— Select course —</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Assessment</label>
+                <select id="complaint-assessment">
+                  <option value="">— Select assessment —</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Your Score</label>
+                <input type="number" id="complaint-score" placeholder="What score did you receive?" />
+              </div>
+              <div class="form-group">
+                <label>Expected Score</label>
+                <input type="number" id="complaint-expected" placeholder="What score do you expect?" />
+              </div>
+              <div class="form-group">
+                <label>Reason</label>
+                <textarea id="complaint-reason" placeholder="Describe the issue clearly…"></textarea>
+              </div>
+              <button class="btn btn-primary" onclick="submitComplaint()">📨 Submit Complaint</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="panel">
+            <div class="panel-header"><span class="panel-title">My Complaints</span></div>
+            <div class="panel-body" id="complaints-list">
+              <p style="color:var(--text2);font-size:14px">No complaints yet.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PAGE: CALENDAR ══════════ -->
+    <div class="page" id="page-calendar">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Academic Calendar · 2025-2026</span></div>
+        <div class="panel-body" id="calendar-body">
+          <p style="color:var(--text2);font-size:14px">Loading calendar…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ PAGE: SETTINGS ══════════ -->
+    <div class="page" id="page-settings">
+      <div class="panel" style="max-width:520px">
+        <div class="panel-header"><span class="panel-title">Account Settings</span></div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label>Display Name</label>
+            <input type="text" id="settings-name" placeholder="Your full name" />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="settings-email" placeholder="your@email.com" />
+          </div>
+          <div class="form-group">
+            <label>Telegram Username</label>
+            <input type="text" id="settings-telegram" placeholder="@username" />
+          </div>
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" id="settings-pw" placeholder="Leave blank to keep current" />
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px">
+            <label style="font-size:14px;color:var(--text2);">Dark Mode</label>
+            <button class="btn btn-outline" onclick="toggleTheme()" style="font-size:12px;padding:6px 12px">Toggle</button>
+          </div>
+          <button class="btn btn-primary" onclick="saveSettings()">💾 Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page-content -->
+</div><!-- /main -->
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script>
+/* ──────────────────────────────────────────
+   CONFIG — replace with your deployed URL
+────────────────────────────────────────── */
+const SCRIPT_URL = localStorage.getItem('script_url') || 'YOUR_APPS_SCRIPT_URL_HERE';
+
+/* ──────────────────────────────────────────
+   AUTH GUARD
+────────────────────────────────────────── */
+const role  = sessionStorage.getItem('portal_role');
+const token = sessionStorage.getItem('portal_token');
+const userId = sessionStorage.getItem('portal_user');
+
+if (role !== 'student') {
+  window.location.href = 'index.html';
+}
+
+/* ──────────────────────────────────────────
+   STUDENT DATA (demo defaults, overridden by API)
+────────────────────────────────────────── */
+let studentData = {
+  name: userId || 'Student',
+  id: userId || 'UGR/—/—',
+  cgpa: 3.45,
+  sgpa: 3.60,
+  credits: 18,
+  avgScore: 81,
+  openComplaints: 1,
+  courses: [
+    {
+      code:'CE401', name:'Highway Engineering', credits:4, semester:2,
+      instructor:'Dr. Tesfaye', total:78, grade:'B', gp:3.0,
+      assessments:[
+        {name:'Assignment 1', weight:5,  max:100, score:85},
+        {name:'Assignment 2', weight:5,  max:100, score:80},
+        {name:'Quiz 1',       weight:10, max:100, score:72},
+        {name:'Quiz 2',       weight:10, max:100, score:68},
+        {name:'Mid Exam',     weight:20, max:100, score:75},
+        {name:'Project',      weight:10, max:100, score:90},
+        {name:'Final Exam',   weight:40, max:100, score:78},
+      ]
+    },
+    {
+      code:'CE402', name:'Structural Analysis', credits:4, semester:2,
+      instructor:'Dr. Alemu', total:85, grade:'A-', gp:3.75,
+      assessments:[
+        {name:'Assignment 1', weight:5,  max:100, score:90},
+        {name:'Assignment 2', weight:5,  max:100, score:88},
+        {name:'Quiz 1',       weight:10, max:100, score:82},
+        {name:'Mid Exam',     weight:20, max:100, score:86},
+        {name:'Final Exam',   weight:60, max:100, score:85},
+      ]
+    },
+    {
+      code:'CE403', name:'Geotechnical Engineering', credits:3, semester:2,
+      instructor:'Dr. Bekele', total:65, grade:'C+', gp:2.5,
+      assessments:[
+        {name:'Assignment 1', weight:10, max:100, score:70},
+        {name:'Quiz 1',       weight:10, max:100, score:60},
+        {name:'Mid Exam',     weight:30, max:100, score:62},
+        {name:'Final Exam',   weight:50, max:100, score:66},
+      ]
+    },
+    {
+      code:'CE404', name:'Fluid Mechanics', credits:3, semester:2,
+      instructor:'Dr. Girma', total:91, grade:'A', gp:4.0,
+      assessments:[
+        {name:'Assignment 1', weight:5,  max:100, score:95},
+        {name:'Assignment 2', weight:5,  max:100, score:92},
+        {name:'Mid Exam',     weight:30, max:100, score:90},
+        {name:'Final Exam',   weight:60, max:100, score:91},
+      ]
+    },
+  ],
+  notifications:[
+    {type:'grade',  title:'Final Exam grades published — CE401', time:'2h ago',  read:false},
+    {type:'note',   title:'New lecture notes uploaded — CE402',  time:'1d ago',  read:false},
+    {type:'notice', title:'Department meeting — Thursday 2pm',   time:'2d ago',  read:false},
+    {type:'grade',  title:'Mid Exam results — CE403',            time:'4d ago',  read:true },
+  ],
+  calendar:[
+    {date:'Jan 15',  event:'Semester 2 begins'},
+    {date:'Feb 10',  event:'Assignment 1 deadline (all courses)'},
+    {date:'Mar 3',   event:'Mid-semester exams begin'},
+    {date:'Mar 10',  event:'Mid-semester exams end'},
+    {date:'Apr 5',   event:'Project submission deadline'},
+    {date:'May 20',  event:'Final exams begin'},
+    {date:'Jun 5',   event:'Final exams end'},
+    {date:'Jun 20',  event:'Results published'},
+  ]
+};
+
+/* ──────────────────────────────────────────
+   INIT
+────────────────────────────────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  loadStudentData();
+});
+
+async function loadStudentData() {
+  // Try API first; fall back to demo data
+  try {
+    const res = await fetch(`${SCRIPT_URL}?action=getStudentResults&studentId=${encodeURIComponent(userId)}&token=${token}`);
+    const data = await res.json();
+    if (data.success) Object.assign(studentData, data.student);
+  } catch { /* use demo data */ }
+
+  renderAll();
+}
+
+function renderAll() {
+  // Sidebar profile
+  document.getElementById('sb-name').textContent = studentData.name;
+  document.getElementById('sb-id').textContent   = studentData.id || userId;
+
+  // Stats
+  document.getElementById('gpa-val').textContent      = studentData.cgpa.toFixed(2);
+  document.getElementById('courses-val').textContent  = studentData.courses.length;
+  document.getElementById('avg-val').textContent      = studentData.avgScore + '%';
+  document.getElementById('complaint-val').textContent = studentData.openComplaints;
+
+  // GPA ring
+  const gpaNum = studentData.cgpa;
+  document.getElementById('gpa-ring-val').textContent = gpaNum.toFixed(2);
+  document.getElementById('sgpa-val').textContent     = studentData.sgpa.toFixed(2);
+  document.getElementById('credits-val').textContent  = studentData.credits;
+  setTimeout(() => {
+    const pct = gpaNum / 4;
+    const circ = 2 * Math.PI * 58; // 364.4
+    document.getElementById('gpa-circle').style.strokeDashoffset = circ - circ * pct;
+  }, 300);
+
+  renderRecentGrades();
+  renderCourseProgress();
+  renderAnnouncements();
+  renderMarksCourseCards();
+  renderNotifications();
+  renderCalendar();
+  populateComplaintDropdowns();
+}
+
+/* ──────────────────────────────────────────
+   GRADING HELPERS
+────────────────────────────────────────── */
+function getGradeFromPct(pct) {
+  if (pct >= 90) return {letter:'A',  gp:4.00};
+  if (pct >= 85) return {letter:'A-', gp:3.75};
+  if (pct >= 80) return {letter:'B+', gp:3.50};
+  if (pct >= 75) return {letter:'B',  gp:3.00};
+  if (pct >= 70) return {letter:'B-', gp:2.75};
+  if (pct >= 65) return {letter:'C+', gp:2.50};
+  if (pct >= 60) return {letter:'C',  gp:2.00};
+  if (pct >= 50) return {letter:'D',  gp:1.00};
+  return {letter:'F', gp:0.00};
+}
+
+function gradeClass(letter) {
+  if (letter.startsWith('A')) return 'grade-A';
+  if (letter.startsWith('B')) return 'grade-B';
+  if (letter.startsWith('C')) return 'grade-C';
+  if (letter === 'D') return 'grade-D';
+  return 'grade-F';
+}
+
+/* ──────────────────────────────────────────
+   RENDER HELPERS
+────────────────────────────────────────── */
+function renderRecentGrades() {
+  const tbody = document.getElementById('recent-grades-body');
+  const rows = [];
+  studentData.courses.slice(0,3).forEach(c => {
+    const last = c.assessments[c.assessments.length-1];
+    const g = getGradeFromPct(last.score);
+    rows.push(`<tr>
+      <td><strong>${c.code}</strong><br><span style="color:var(--text2);font-size:12px">${c.name}</span></td>
+      <td>${last.name}</td>
+      <td>${last.score}/${last.max}</td>
+      <td>${last.weight}%</td>
+      <td><span class="grade-badge ${gradeClass(g.letter)}">${g.letter}</span></td>
+    </tr>`);
+  });
+  tbody.innerHTML = rows.join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text2)">No grades yet</td></tr>';
+}
+
+function renderCourseProgress() {
+  const wrap = document.getElementById('course-progress-wrap');
+  wrap.innerHTML = studentData.courses.map(c => `
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span>${c.code} — ${c.name}</span>
+        <span>${c.total}% · ${c.grade}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${c.total}%"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAnnouncements() {
+  const wrap = document.getElementById('announcements-wrap');
+  const icons = {grade:'📊', note:'📚', notice:'📢'};
+  const colors = {grade:'rgba(37,99,235,0.15)', note:'rgba(16,185,129,0.15)', notice:'rgba(245,158,11,0.15)'};
+  wrap.innerHTML = studentData.notifications.slice(0,4).map(n => `
+    <div class="notif-item ${n.read?'':'unread'}">
+      <div class="notif-dot-icon" style="background:${colors[n.type]}">${icons[n.type]}</div>
+      <div>
+        <div class="title">${n.title}</div>
+        <div class="meta">${n.time}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderMarksCourseCards() {
+  const wrap = document.getElementById('marks-course-cards');
+  wrap.innerHTML = studentData.courses.map((c,i) => `
+    <div class="course-card" onclick="showCourseDetail(${i})">
+      <div class="code">${c.code}</div>
+      <div class="name">${c.name}</div>
+      <div class="info">👨‍🏫 ${c.instructor} · ${c.credits} Cr Hrs</div>
+      <div class="grade-row">
+        <span style="font-size:1.4rem;font-weight:700">${c.total}%</span>
+        <span class="grade-badge ${gradeClass(c.grade)}">${c.grade} · ${c.gp.toFixed(2)}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function showCourseDetail(idx) {
+  const c = studentData.courses[idx];
+  document.getElementById('detail-course-name').textContent = `${c.code} — ${c.name}`;
+  const detail = document.getElementById('assessment-detail');
+  detail.style.display = '';
+
+  // Build weighted total manually
+  let weighted = 0;
+  c.assessments.forEach(a => weighted += (a.score / a.max) * a.weight);
+  const g = getGradeFromPct(weighted);
+
+  const rows = c.assessments.map(a => {
+    const contrib = ((a.score / a.max) * a.weight).toFixed(1);
+    return `<div class="assessment-row">
+      <span>${a.name}</span>
+      <span>${a.weight}%</span>
+      <span>${a.score}/${a.max}</span>
+      <span>${contrib}</span>
+      <span><span class="grade-badge ${gradeClass(getGradeFromPct(a.score).letter)}">${getGradeFromPct(a.score).letter}</span></span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('assessment-detail-body').innerHTML = `
+    <div class="assessment-row header">
+      <span>Assessment</span><span>Weight</span><span>Score</span><span>Contrib.</span><span>Grade</span>
+    </div>
+    ${rows}
+    <div class="assessment-row" style="font-weight:700;border-top:2px solid var(--border);margin-top:4px">
+      <span>Total</span>
+      <span>100%</span>
+      <span>${weighted.toFixed(1)}</span>
+      <span>${weighted.toFixed(1)}</span>
+      <span><span class="grade-badge ${gradeClass(g.letter)}">${g.letter} · ${g.gp}</span></span>
+    </div>
+    <div style="margin-top:16px;padding:14px;background:var(--glass);border-radius:var(--radius-sm);font-size:13px;color:var(--text2)">
+      Ethiopian Grading: A(90-100)=4.0 · A-(85-89)=3.75 · B+(80-84)=3.5 · B(75-79)=3.0 · B-(70-74)=2.75 · C+(65-69)=2.5 · C(60-64)=2.0 · D(50-59)=1.0 · F(&lt;50)=0
+    </div>
+  `;
+  detail.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function renderNotifications() {
+  const icons = {grade:'📊', note:'📚', notice:'📢'};
+  const colors = {grade:'rgba(37,99,235,0.15)', note:'rgba(16,185,129,0.15)', notice:'rgba(245,158,11,0.15)'};
+  const body = document.getElementById('notifications-body');
+  body.innerHTML = studentData.notifications.map(n => `
+    <div class="notif-item ${n.read?'':'unread'}">
+      <div class="notif-dot-icon" style="background:${colors[n.type]}">${icons[n.type]}</div>
+      <div>
+        <div class="title">${n.title}</div>
+        <div class="meta">${n.time}</div>
+      </div>
+    </div>
+  `).join('');
+  const unread = studentData.notifications.filter(n=>!n.read).length;
+  document.getElementById('notif-count').textContent = unread;
+  document.getElementById('notif-count').style.display = unread ? 'inline' : 'none';
+}
+
+function renderCalendar() {
+  const body = document.getElementById('calendar-body');
+  body.innerHTML = studentData.calendar.map(e => `
+    <div style="display:flex;gap:16px;padding:12px 0;border-bottom:1px solid var(--border);align-items:center">
+      <div style="min-width:64px;font-size:13px;font-weight:600;color:var(--blue)">${e.date}</div>
+      <div style="font-size:14px">${e.event}</div>
+    </div>
+  `).join('');
+}
+
+function populateComplaintDropdowns() {
+  const cs = document.getElementById('complaint-course');
+  studentData.courses.forEach(c => {
+    cs.innerHTML += `<option value="${c.code}">${c.code} — ${c.name}</option>`;
+  });
+  cs.addEventListener('change', () => {
+    const ca = document.getElementById('complaint-assessment');
+    ca.innerHTML = '<option value="">— Select assessment —</option>';
+    const course = studentData.courses.find(c=>c.code===cs.value);
+    if (course) course.assessments.forEach(a => {
+      ca.innerHTML += `<option value="${a.name}">${a.name}</option>`;
+    });
+  });
+}
+
+/* ──────────────────────────────────────────
+   TESTS & NOTES (demo)
+────────────────────────────────────────── */
+function renderTests() {
+  const tests = [
+    {code:'CE401', name:'Quiz 2 — Highway Engineering', date:'Mar 20, 2026', duration:'45 min', status:'upcoming'},
+    {code:'CE402', name:'Mid Exam — Structural Analysis', date:'Mar 3, 2026',  duration:'90 min', status:'completed'},
+    {code:'CE403', name:'Quiz 1 — Geotechnical Engineering', date:'Feb 25, 2026', duration:'30 min', status:'completed'},
+  ];
+  const statusColor = {upcoming:'rgba(37,99,235,0.15)', completed:'rgba(16,185,129,0.15)'};
+  const statusText  = {upcoming:'#60A5FA', completed:'#10B981'};
+  document.getElementById('tests-list').innerHTML = tests.map(t => `
+    <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)">
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:15px">${t.name}</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:3px">📅 ${t.date} · ⏱ ${t.duration}</div>
+      </div>
+      <span style="padding:4px 12px;border-radius:999px;font-size:12px;font-weight:600;background:${statusColor[t.status]};color:${statusText[t.status]}">
+        ${t.status.charAt(0).toUpperCase()+t.status.slice(1)}
+      </span>
+      ${t.status==='upcoming' ? `<button class="btn btn-primary" style="font-size:13px;padding:8px 16px">Start →</button>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderNotes() {
+  const notes = [
+    {course:'CE401', name:'Chapter 5 — Pavement Design.pdf', size:'2.4 MB', date:'Mar 10'},
+    {course:'CE402', name:'Structural Analysis — Module 3.pdf', size:'1.8 MB', date:'Mar 8'},
+    {course:'CE403', name:'Soil Mechanics Lecture Slides.pptx', size:'4.1 MB', date:'Mar 5'},
+    {course:'CE404', name:'Fluid Mechanics Formula Sheet.pdf', size:'0.9 MB', date:'Feb 28'},
+  ];
+  document.getElementById('notes-list').innerHTML = notes.map(n => `
+    <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid var(--border)">
+      <div style="font-size:28px">📄</div>
+      <div style="flex:1">
+        <div style="font-weight:500;font-size:14px">${n.name}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px">${n.course} · ${n.size} · ${n.date}</div>
+      </div>
+      <button class="btn btn-outline" style="font-size:13px;padding:8px 14px">⬇ Download</button>
+    </div>
+  `).join('');
+}
+
+/* ──────────────────────────────────────────
+   AI CHAT (calls Anthropic via Apps Script)
+────────────────────────────────────────── */
+const chatHistory = [];
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  appendChatMsg('user', msg);
+  chatHistory.push({role:'user', content: msg});
+
+  const thinking = appendChatMsg('bot', '⋯ thinking…');
+
+  try {
+    const context = JSON.stringify({
+      student: studentData.name,
+      cgpa: studentData.cgpa,
+      courses: studentData.courses.map(c => ({code:c.code, name:c.name, grade:c.grade, total:c.total}))
+    });
+    const res = await fetch(`${SCRIPT_URL}?action=aiChat&msg=${encodeURIComponent(msg)}&context=${encodeURIComponent(context)}`);
+    const data = await res.json();
+    thinking.textContent = data.reply || 'Sorry, I could not answer that.';
+  } catch {
+    thinking.textContent = 'Unable to reach AI. Check your connection.';
+  }
+}
+
+function appendChatMsg(role, text) {
+  const win = document.getElementById('chat-window');
+  const wrap = document.createElement('div');
+  wrap.className = `chat-msg ${role === 'user' ? 'user' : ''}`;
+  wrap.innerHTML = `
+    <div class="chat-avatar">${role==='user'?'🎓':'🤖'}</div>
+    <div class="chat-bubble">${text}</div>
+  `;
+  win.appendChild(wrap);
+  win.scrollTop = win.scrollHeight;
+  return wrap.querySelector('.chat-bubble');
+}
+
+/* ──────────────────────────────────────────
+   COMPLAINTS
+────────────────────────────────────────── */
+async function submitComplaint() {
+  const payload = {
+    action: 'submitComplaint',
+    studentId: userId,
+    course:    document.getElementById('complaint-course').value,
+    assessment:document.getElementById('complaint-assessment').value,
+    score:     document.getElementById('complaint-score').value,
+    expected:  document.getElementById('complaint-expected').value,
+    reason:    document.getElementById('complaint-reason').value,
+  };
+  if (!payload.course || !payload.assessment || !payload.reason) {
+    showToast('⚠ Please fill in all required fields.'); return;
+  }
+  try {
+    await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(payload) });
+    showToast('✅ Complaint submitted successfully!');
+    document.getElementById('complaint-reason').value = '';
+  } catch { showToast('❌ Submission failed. Try again.'); }
+}
+
+/* ──────────────────────────────────────────
+   SETTINGS
+────────────────────────────────────────── */
+function saveSettings() {
+  showToast('✅ Settings saved!');
+}
+
+/* ──────────────────────────────────────────
+   UI HELPERS
+────────────────────────────────────────── */
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+
+  const titles = {
+    dashboard:'Dashboard', marks:'My Marks', tests:'Online Tests',
+    notes:'Lecture Notes', ai:'AI Assistant', notifications:'Notifications',
+    complaints:'Complaints', calendar:'Academic Calendar', settings:'Settings'
+  };
+  document.getElementById('page-title').textContent = titles[id] || 'Portal';
+
+  // Lazy render
+  if (id === 'tests')  renderTests();
+  if (id === 'notes')  renderNotes();
+
+  // Close sidebar on mobile
+  if (window.innerWidth < 768) closeSidebar();
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('overlay');
+  if (window.innerWidth < 768) {
+    sb.classList.toggle('mobile-open');
+    ov.classList.toggle('show');
+  } else {
+    sb.classList.toggle('collapsed');
+    document.getElementById('main').classList.toggle('expanded');
+  }
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  html.dataset.theme = next;
+  document.querySelector('.theme-btn').textContent = next === 'dark' ? '🌙' : '☀️';
+  localStorage.setItem('theme', next);
+}
+
+function markAllRead() {
+  studentData.notifications.forEach(n => n.read = true);
+  renderNotifications();
+  showToast('✅ All notifications marked as read.');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function logout() {
+  sessionStorage.clear();
+  window.location.href = 'index.html';
+}
+
+// Restore theme
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme) {
+  document.documentElement.dataset.theme = savedTheme;
+  document.querySelector('.theme-btn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+}
+
+// Auto logout after 30min inactivity
+let inactivityTimer;
+function resetTimer() {
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(() => { showToast('Session expired.'); setTimeout(logout, 2000); }, 30*60*1000);
+}
+['mousemove','keydown','click','touchstart'].forEach(e => document.addEventListener(e, resetTimer));
+resetTimer();
+</script>
+</body>
+</html>
